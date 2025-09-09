@@ -55,7 +55,7 @@ export default function WordCard({ word, translation, gematria, onKnown, onUnkno
               <div className="text-3xl font-semibold text-white mb-4" style={{ direction: 'rtl' }}>
                 {word}
               </div>
-              <div className="text-xl text-slate-200 mb-6 leading-relaxed bg-slate-800/30 p-4 rounded-xl">
+              <div className="text-xl text-slate-200 mb-6 leading-relaxed bg-slate-800/30 p-4 rounded-xl min-h-[60px] flex items-center justify-center">
                 {translation}
               </div>
               

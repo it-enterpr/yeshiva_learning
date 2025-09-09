@@ -15,25 +15,31 @@ export default function LessonPage() {
 
   useEffect(() => {
     if (id) {
-      loadLesson();
+      loadLessonData();
     }
   }, [id]);
 
-  const loadLesson = () => {
-    // Demo lesson data
-    const demoLesson: Lesson = {
-      id: id!,
-      course_id: '1',
-      title: 'בראשית א׳ א׳-ה׳',
-      content: 'בְּרֵאשִׁית בָּרָא אֱלֹהִים אֵת הַשָּׁמַיִם וְאֵת הָאָרֶץ׃ וְהָאָרֶץ הָיְתָה תֹהוּ וָבֹהוּ וְחֹשֶׁךְ עַל־פְּנֵי תְהוֹם וְרוּחַ אֱלֹהִים מְרַחֶפֶת עַל־פְּנֵי הַמָּיִם׃',
-      audio_url: 'https://example.com/audio1.mp3',
-      youtube_url: 'https://youtube.com/watch?v=example1',
-      order_number: 1,
-      created_at: new Date().toISOString()
-    };
+  const loadLessonData = () => {
+    // Загружаем урок из localStorage или используем демо данные
+    const savedLessons = JSON.parse(localStorage.getItem('lessons') || '[]');
+    let foundLesson = savedLessons.find((lesson: Lesson) => lesson.id === id);
+    
+    if (!foundLesson) {
+      // Демо урок если не найден сохраненный
+      foundLesson = {
+        id: id!,
+        course_id: '1',
+        title: 'בראשית א׳ א׳-ה׳',
+        content: 'בְּרֵאשִׁית בָּרָא אֱלֹהִים אֵת הַשָּׁמַיִם וְאֵת הָאָרֶץ׃ וְהָאָרֶץ הָיְתָה תֹהוּ וָבֹהוּ וְחֹשֶׁךְ עַל־פְּנֵי תְהוֹם וְרוּחַ אֱלֹהִים מְרַחֶפֶת עַל־פְּנֵי הַמָּיִם׃',
+        audio_url: 'https://example.com/audio1.mp3',
+        youtube_url: 'https://youtube.com/watch?v=example1',
+        order_number: 1,
+        created_at: new Date().toISOString()
+      };
+    }
 
-    setLesson(demoLesson);
-    const uniqueWords = extractUniqueWords(demoLesson.content);
+    setLesson(foundLesson);
+    const uniqueWords = extractUniqueWords(foundLesson.content);
     setWords(uniqueWords);
     setLoading(false);
   };

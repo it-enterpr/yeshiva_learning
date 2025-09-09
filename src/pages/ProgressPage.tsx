@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { Book, Target, TrendingUp, Clock, Award, Brain, Calendar, Trophy } from 'lucide-react';
+import { useTheme } from '../context/ThemeContext';
 
 export default function ProgressPage() {
+  const { darkMode } = useTheme();
   const [stats] = useState({
     totalCourses: 3,
     completedLessons: 12,
@@ -13,27 +15,37 @@ export default function ProgressPage() {
     totalStudyTime: 24
   });
 
-  const progressPercentage = (stats.completedLessons / stats.totalLessons) * 100;
-  const wordKnowledgePercentage = (stats.knownWords / (stats.knownWords + stats.learningWords)) * 100;
+  // Загружаем реальные данные из localStorage
+  const userProfile = JSON.parse(localStorage.getItem('userProfile') || '{}');
+  const realStats = {
+    ...stats,
+    knownWords: userProfile.knownWords || stats.knownWords,
+    studyStreak: userProfile.studyStreak || stats.studyStreak,
+    totalLessons: userProfile.totalLessons || stats.totalLessons,
+    completedLessons: Math.min(userProfile.totalLessons || stats.completedLessons, stats.totalLessons)
+  };
+
+  const progressPercentage = (realStats.completedLessons / realStats.totalLessons) * 100;
+  const wordKnowledgePercentage = (realStats.knownWords / (realStats.knownWords + stats.learningWords)) * 100;
 
   return (
-    <div className="p-6 pt-16">
+    <div className={`p-6 pt-16 min-h-screen ${darkMode ? 'text-white' : 'text-gray-900'}`}>
       <div className="mb-8">
-        <h1 className="text-4xl font-bold text-white mb-3 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+        <h1 className={`text-4xl font-bold mb-3 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent`}>
           Ваш прогресс
         </h1>
-        <p className="text-slate-400 text-lg">Отслеживайте свой путь обучения</p>
+        <p className={`${darkMode ? 'text-slate-400' : 'text-gray-600'} text-lg`}>Отслеживайте свой путь обучения</p>
       </div>
 
       {/* Overview Cards */}
       <div className="grid grid-cols-2 gap-4 mb-8">
-        <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl p-6 border border-slate-600 shadow-xl">
+        <div className={`${darkMode ? 'bg-gradient-to-br from-slate-800 to-slate-900 border-slate-600' : 'bg-white border-gray-200'} rounded-2xl p-6 border shadow-xl`}>
           <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mb-4 shadow-lg">
             <Book size={28} className="text-white" />
           </div>
-          <div className="text-3xl font-bold text-white mb-2">{stats.completedLessons}</div>
-          <div className="text-sm text-slate-400 mb-3">Уроков завершено</div>
-          <div className="w-full bg-slate-700 rounded-full h-2">
+          <div className={`text-3xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'} mb-2`}>{realStats.completedLessons}</div>
+          <div className={`text-sm ${darkMode ? 'text-slate-400' : 'text-gray-600'} mb-3`}>Уроков завершено</div>
+          <div className={`w-full ${darkMode ? 'bg-slate-700' : 'bg-gray-200'} rounded-full h-2`}>
             <div 
               className="bg-gradient-to-r from-blue-500 to-blue-600 h-2 rounded-full transition-all duration-500"
               style={{ width: `${progressPercentage}%` }}
@@ -41,13 +53,13 @@ export default function ProgressPage() {
           </div>
         </div>
 
-        <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl p-6 border border-slate-600 shadow-xl">
+        <div className={`${darkMode ? 'bg-gradient-to-br from-slate-800 to-slate-900 border-slate-600' : 'bg-white border-gray-200'} rounded-2xl p-6 border shadow-xl`}>
           <div className="w-14 h-14 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center mb-4 shadow-lg">
             <Brain size={28} className="text-white" />
           </div>
-          <div className="text-3xl font-bold text-white mb-2">{stats.knownWords}</div>
-          <div className="text-sm text-slate-400 mb-3">Изученных слов</div>
-          <div className="w-full bg-slate-700 rounded-full h-2">
+          <div className={`text-3xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'} mb-2`}>{realStats.knownWords}</div>
+          <div className={`text-sm ${darkMode ? 'text-slate-400' : 'text-gray-600'} mb-3`}>Изученных слов</div>
+          <div className={`w-full ${darkMode ? 'bg-slate-700' : 'bg-gray-200'} rounded-full h-2`}>
             <div 
               className="bg-gradient-to-r from-green-500 to-green-600 h-2 rounded-full transition-all duration-500"
               style={{ width: `${wordKnowledgePercentage}%` }}
@@ -55,20 +67,20 @@ export default function ProgressPage() {
           </div>
         </div>
 
-        <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl p-6 border border-slate-600 shadow-xl">
+        <div className={`${darkMode ? 'bg-gradient-to-br from-slate-800 to-slate-900 border-slate-600' : 'bg-white border-gray-200'} rounded-2xl p-6 border shadow-xl`}>
           <div className="w-14 h-14 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-2xl flex items-center justify-center mb-4 shadow-lg">
             <Target size={28} className="text-white" />
           </div>
-          <div className="text-3xl font-bold text-white mb-2">{stats.averageScore}%</div>
-          <div className="text-sm text-slate-400">Средний балл</div>
+          <div className={`text-3xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'} mb-2`}>{stats.averageScore}%</div>
+          <div className={`text-sm ${darkMode ? 'text-slate-400' : 'text-gray-600'}`}>Средний балл</div>
         </div>
 
-        <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl p-6 border border-slate-600 shadow-xl">
+        <div className={`${darkMode ? 'bg-gradient-to-br from-slate-800 to-slate-900 border-slate-600' : 'bg-white border-gray-200'} rounded-2xl p-6 border shadow-xl`}>
           <div className="w-14 h-14 bg-gradient-to-br from-red-500 to-red-600 rounded-2xl flex items-center justify-center mb-4 shadow-lg">
             <TrendingUp size={28} className="text-white" />
           </div>
-          <div className="text-3xl font-bold text-white mb-2">{stats.studyStreak}</div>
-          <div className="text-sm text-slate-400">Дней подряд</div>
+          <div className={`text-3xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'} mb-2`}>{realStats.studyStreak}</div>
+          <div className={`text-sm ${darkMode ? 'text-slate-400' : 'text-gray-600'}`}>Дней подряд</div>
         </div>
       </div>
 

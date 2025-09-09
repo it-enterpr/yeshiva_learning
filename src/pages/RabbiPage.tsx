@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Users, BookOpen, Plus, BarChart3, MessageSquare, X, Save, Check } from 'lucide-react';
+import { useTheme } from '../context/ThemeContext';
 
 interface NewLesson {
   title: string;
@@ -10,6 +11,7 @@ interface NewLesson {
 }
 
 export default function RabbiPage() {
+  const { darkMode } = useTheme();
   const [showCreateLesson, setShowCreateLesson] = useState(false);
   const [showAnalytics, setShowAnalytics] = useState(false);
   const [showTranslationRequests, setShowTranslationRequests] = useState(false);
@@ -82,6 +84,13 @@ export default function RabbiPage() {
     showSuccessMessage('Урок успешно создан!');
   };
 
+  const handleCreateCourse = () => {
+    const courseName = prompt('Введите название нового курса:');
+    if (courseName) {
+      showSuccessMessage(`Курс "${courseName}" создан!`);
+    }
+  };
+
   const handleTranslationResponse = (requestId: number, translation: string) => {
     if (!translation.trim()) {
       alert('Пожалуйста, введите перевод');
@@ -92,7 +101,7 @@ export default function RabbiPage() {
   };
 
   return (
-    <div className="p-6 pt-16">
+    <div className={`p-6 pt-16 min-h-screen ${darkMode ? 'text-white' : 'text-gray-900'}`}>
       {/* Success Message */}
       {successMessage && (
         <div className="fixed top-20 left-1/2 transform -translate-x-1/2 bg-green-600 text-white px-6 py-3 rounded-xl shadow-lg z-50 flex items-center">
@@ -102,48 +111,48 @@ export default function RabbiPage() {
       )}
 
       <div className="mb-8">
-        <h1 className="text-4xl font-bold text-white mb-3 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+        <h1 className="text-4xl font-bold mb-3 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
           Панель раввина
         </h1>
-        <p className="text-slate-400 text-lg">Управляйте курсами и отслеживайте прогресс студентов</p>
+        <p className={`${darkMode ? 'text-slate-400' : 'text-gray-600'} text-lg`}>Управляйте курсами и отслеживайте прогресс студентов</p>
       </div>
 
       {/* Quick Stats */}
       <div className="grid grid-cols-2 gap-4 mb-8">
-        <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl p-6 border border-slate-600 shadow-xl">
+        <div className={`${darkMode ? 'bg-gradient-to-br from-slate-800 to-slate-900 border-slate-600' : 'bg-white border-gray-200'} rounded-2xl p-6 border shadow-xl`}>
           <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mb-4 shadow-lg">
             <Users size={28} className="text-white" />
           </div>
-          <div className="text-3xl font-bold text-white mb-2">{analytics.totalStudents}</div>
-          <div className="text-sm text-slate-400">Активных студентов</div>
+          <div className={`text-3xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'} mb-2`}>{analytics.totalStudents}</div>
+          <div className={`text-sm ${darkMode ? 'text-slate-400' : 'text-gray-600'}`}>Активных студентов</div>
           <div className="text-xs text-green-400 mt-1">+3 за неделю</div>
         </div>
 
-        <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl p-6 border border-slate-600 shadow-xl">
+        <div className={`${darkMode ? 'bg-gradient-to-br from-slate-800 to-slate-900 border-slate-600' : 'bg-white border-gray-200'} rounded-2xl p-6 border shadow-xl`}>
           <div className="w-14 h-14 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center mb-4 shadow-lg">
             <BookOpen size={28} className="text-white" />
           </div>
-          <div className="text-3xl font-bold text-white mb-2">{analytics.activeCourses}</div>
-          <div className="text-sm text-slate-400">Активных курсов</div>
+          <div className={`text-3xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'} mb-2`}>{analytics.activeCourses}</div>
+          <div className={`text-sm ${darkMode ? 'text-slate-400' : 'text-gray-600'}`}>Активных курсов</div>
           <div className="text-xs text-blue-400 mt-1">{analytics.completedLessons} уроков всего</div>
         </div>
       </div>
 
       {/* Quick Actions */}
       <div className="mb-8">
-        <h2 className="text-2xl font-bold text-white mb-6">Быстрые действия</h2>
+        <h2 className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'} mb-6`}>Быстрые действия</h2>
         
         <div className="space-y-4">
           <button 
-            onClick={() => alert('Создание нового курса:\n• Название курса\n• Описание\n• Уровень сложности\n• Категория (Тора, Талмуд, Мишна)')}
-            className="w-full flex items-center bg-gradient-to-br from-slate-800 to-slate-900 hover:from-slate-750 hover:to-slate-850 rounded-2xl p-6 border border-slate-600 transition-all duration-300 shadow-xl hover:shadow-blue-500/10 hover:border-blue-500/30"
+            onClick={handleCreateCourse}
+            className={`w-full flex items-center ${darkMode ? 'bg-gradient-to-br from-slate-800 to-slate-900 hover:from-slate-750 hover:to-slate-850 border-slate-600 hover:border-blue-500/30' : 'bg-white hover:bg-gray-50 border-gray-200 hover:border-blue-300'} rounded-2xl p-6 border transition-all duration-300 shadow-xl hover:shadow-blue-500/10`}
           >
             <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mr-4 shadow-lg">
               <Plus size={28} className="text-white" />
             </div>
             <div className="text-left">
-              <div className="font-bold text-white text-lg">Создать новый курс</div>
-              <div className="text-slate-400">Добавить новый курс изучения Торы</div>
+              <div className={`font-bold ${darkMode ? 'text-white' : 'text-gray-900'} text-lg`}>Создать новый курс</div>
+              <div className={`${darkMode ? 'text-slate-400' : 'text-gray-600'}`}>Добавить новый курс изучения Торы</div>
             </div>
           </button>
 
