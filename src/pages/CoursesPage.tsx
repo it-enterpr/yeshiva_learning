@@ -58,6 +58,7 @@ export default function CoursesPage() {
 
       <div className="space-y-6">
         {courses.map((course, index) => (
+        {courses.map((course) => (
           <Link
             key={course.id}
             to={`/course/${course.id}`}

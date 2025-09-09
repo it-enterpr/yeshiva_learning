@@ -1,4 +1,4 @@
-import { Users, BookOpen, Plus, BarChart3, MessageSquare, Settings } from 'lucide-react';
+import { Users, BookOpen, Plus, BarChart3, MessageSquare } from 'lucide-react';
 
 export default function RabbiPage() {
   return (
