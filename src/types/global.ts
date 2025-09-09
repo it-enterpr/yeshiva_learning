@@ -40,8 +40,8 @@ export interface Translation {
   word_id: string;
   language: string;
   translation: string;
-  course_id?: string; // For course-specific translations
-  lesson_id?: string; // For lesson-specific translations
+  course_id?: string;
+  lesson_id?: string;
 }
 
 export interface StudentProgress {

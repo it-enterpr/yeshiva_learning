@@ -1,38 +1,19 @@
 import { createClient } from '@supabase/supabase-js';
 
 // Environment variables validation
-const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL;
-const supabaseAnonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-// Validation with helpful error messages
-if (!supabaseUrl) {
-  console.error('Missing EXPO_PUBLIC_SUPABASE_URL environment variable');
-  throw new Error('Supabase URL is required. Please check your .env file.');
-}
-
-if (!supabaseAnonKey) {
-  console.error('Missing EXPO_PUBLIC_SUPABASE_ANON_KEY environment variable');
-  throw new Error('Supabase Anonymous Key is required. Please check your .env file.');
-}
-
-// Validate URL format
-try {
-  new URL(supabaseUrl);
-} catch (error) {
-  throw new Error(`Invalid Supabase URL format: ${supabaseUrl}`);
-}
-
-// Create and export Supabase client
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-  auth: {
-    autoRefreshToken: true,
-    persistSession: true,
-    detectSessionInUrl: false,
-  },
-});
-
-// Export types for TypeScript
-export type { Database } from './database.types';
+// Create and export Supabase client (will be null if not configured)
+export const supabase = supabaseUrl && supabaseAnonKey 
+  ? createClient(supabaseUrl, supabaseAnonKey, {
+      auth: {
+        autoRefreshToken: true,
+        persistSession: true,
+        detectSessionInUrl: false,
+      },
+    })
+  : null;
 
 // Helper function to check if Supabase is properly configured
 export const isSupabaseConfigured = (): boolean => {
