@@ -15,7 +15,7 @@ export default function CoursesPage() {
   const loadCourses = async () => {
     try {
       if (isSupabaseConfigured()) {
-        const { data, error } = await supabase
+        const { data, error } = await supabase!
           .from('courses')
           .select('*')
           .eq('is_active', true)
