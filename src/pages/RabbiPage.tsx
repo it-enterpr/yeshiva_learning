@@ -1,4 +1,3 @@
-import React from 'react';
 import { Users, BookOpen, Plus, BarChart3 } from 'lucide-react';
 
 export default function RabbiPage() {

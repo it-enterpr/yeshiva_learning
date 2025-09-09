@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Book, Target, TrendingUp, Clock, Award, Brain } from 'lucide-react';
 
 export default function ProgressPage() {

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { User, Globe, Palette, Bell, Shield, LogOut, ChevronRight } from 'lucide-react';
 
 export default function SettingsPage() {
