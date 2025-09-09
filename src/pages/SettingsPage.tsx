@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { User, Globe, Palette, Bell, Shield, LogOut, ChevronRight, Volume2, BookOpen, Save, Check } from 'lucide-react';
-
+import { useTheme } from '../context/ThemeContext';
+ 
 interface UserProfile {
   name: string;
   email: string;
@@ -11,8 +12,8 @@ interface UserProfile {
 }
 
 export default function SettingsPage() {
-  const [notifications, setNotifications] = useState(true);
-  const [darkMode, setDarkMode] = useState(true);
+  const { darkMode, toggleDarkMode } = useTheme();
+  const [notifications, setNotifications] = useState(true); // This state is still local for notifications
   const [autoPlay, setAutoPlay] = useState(false);
   const [rtlMode, setRtlMode] = useState(true);
   const [showProfileEdit, setShowProfileEdit] = useState(false);
@@ -51,7 +52,7 @@ export default function SettingsPage() {
     if (savedSettings) {
       const settings = JSON.parse(savedSettings);
       setNotifications(settings.notifications ?? true);
-      setDarkMode(settings.darkMode ?? true);
+      // darkMode is now managed by ThemeContext, no need to load here
       setAutoPlay(settings.autoPlay ?? false);
       setRtlMode(settings.rtlMode ?? true);
     }
@@ -60,7 +61,7 @@ export default function SettingsPage() {
   const saveSettings = () => {
     const settings = {
       notifications,
-      darkMode,
+      // darkMode is saved by ThemeContext
       autoPlay,
       rtlMode
     };
@@ -97,9 +98,6 @@ export default function SettingsPage() {
     switch (setting) {
       case 'notifications':
         setNotifications(value);
-        break;
-      case 'darkMode':
-        setDarkMode(value);
         break;
       case 'autoPlay':
         setAutoPlay(value);
@@ -249,8 +247,8 @@ export default function SettingsPage() {
             <label className="relative inline-flex items-center cursor-pointer">
               <input
                 type="checkbox"
-                checked={darkMode}
-                onChange={(e) => toggleSetting('darkMode', e.target.checked)}
+                checked={darkMode} // Use darkMode from context
+                onChange={toggleDarkMode} // Use toggleDarkMode from context
                 className="sr-only peer"
               />
               <div className="w-14 h-8 bg-slate-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-6 peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-7 after:w-7 after:transition-all peer-checked:bg-blue-600 shadow-lg"></div>

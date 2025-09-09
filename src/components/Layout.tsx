@@ -1,5 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
 import { Book, User, Users, Settings } from 'lucide-react';
+import { useTheme } from '../context/ThemeContext';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -7,6 +8,7 @@ interface LayoutProps {
 
 export default function Layout({ children }: LayoutProps) {
   const location = useLocation();
+  const { darkMode } = useTheme();
 
   const navItems = [
     { path: '/', icon: Book, label: 'Курсы' },
@@ -15,8 +17,12 @@ export default function Layout({ children }: LayoutProps) {
     { path: '/settings', icon: Settings, label: 'Настройки' },
   ];
 
+  const backgroundClass = darkMode
+    ? 'bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900'
+    : 'bg-gradient-to-br from-gray-100 via-gray-50 to-gray-100';
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex flex-col">
+    <div className={`min-h-screen flex flex-col ${backgroundClass} transition-colors duration-500`}>
       <main className="flex-1 pb-20">
         {children}
       </main>

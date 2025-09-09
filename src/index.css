@@ -9,8 +9,12 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: #0f172a;
-  color: #f1f5f9;
+  /* Remove background-color here to allow Tailwind classes on html/body to control it */
+  /* Remove color here to allow Tailwind classes to control text color */
+}
+
+html:not(.dark) {
+  color: #334155; /* Example: slate-700 for light mode text */
 }
 
 * {
