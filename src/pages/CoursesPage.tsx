@@ -116,6 +116,9 @@ export default function CoursesPage() {
           <p className="text-slate-400 text-lg">Проверьте позже для новых курсов</p>
         </div>
       )}
+    )
+    )
+    }
     </div>
   );
 }
