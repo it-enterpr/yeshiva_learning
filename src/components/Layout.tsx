@@ -19,7 +19,7 @@ export default function Layout({ children }: LayoutProps) {
 
   const backgroundClass = darkMode
     ? 'bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900'
-    : 'bg-gradient-to-br from-gray-100 via-gray-50 to-gray-100';
+    : 'bg-gradient-to-br from-blue-50 via-white to-purple-50';
 
   return (
     <div className={`min-h-screen flex flex-col ${backgroundClass} transition-colors duration-500`}>
@@ -27,7 +27,11 @@ export default function Layout({ children }: LayoutProps) {
         {children}
       </main>
       
-      <nav className="fixed bottom-0 left-0 right-0 bg-gradient-to-r from-slate-800 to-slate-900 border-t border-slate-600 backdrop-blur-lg">
+      <nav className={`fixed bottom-0 left-0 right-0 border-t backdrop-blur-lg ${
+        darkMode 
+          ? 'bg-gradient-to-r from-slate-800 to-slate-900 border-slate-600' 
+          : 'bg-white/90 border-gray-200 shadow-lg'
+      }`}>
         <div className="flex justify-around items-center py-3">
           {navItems.map(({ path, icon: Icon, label }) => (
             <Link
@@ -35,12 +39,16 @@ export default function Layout({ children }: LayoutProps) {
               to={path}
               className={`flex flex-col items-center py-2 px-4 rounded-xl transition-all duration-200 ${
                 location.pathname === path
-                  ? 'text-blue-400 bg-blue-500/10 shadow-lg'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/50'
+                  ? darkMode 
+                    ? 'text-blue-400 bg-blue-500/10 shadow-lg'
+                    : 'text-blue-600 bg-blue-100 shadow-lg'
+                  : darkMode
+                    ? 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/50'
+                    : 'text-gray-600 hover:text-gray-800 hover:bg-gray-100'
               }`}
             >
               <Icon size={24} />
-              <span className="text-xs mt-1 font-medium">{label}</span>
+              <span className="text-xs mt-1 font-semibold">{label}</span>
             </Link>
           ))}
         </div>
