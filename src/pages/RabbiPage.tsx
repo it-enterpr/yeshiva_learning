@@ -91,7 +91,7 @@ export default function RabbiPage() {
     }
   };
 
-  const handleTranslationResponse = (requestId: number, translation: string) => {
+  const handleTranslationResponse = (_requestId: number, translation: string) => {
     if (!translation.trim()) {
       alert('Пожалуйста, введите перевод');
       return;
