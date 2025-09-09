@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Play, Pause, Volume2 } from 'lucide-react';
+import { ArrowLeft, Play, Volume2 } from 'lucide-react';
 import { Lesson } from '../types/global';
 import WordCard from '../components/WordCard';
 import { extractUniqueWords, calculateGematria } from '../utils/hebrew';
