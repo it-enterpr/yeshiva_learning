@@ -1,5 +1,3 @@
-```typescript
-// src/context/ThemeContext.tsx
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
 interface ThemeContextType {
@@ -49,4 +47,3 @@ export const useTheme = () => {
   }
   return context;
 };
-```
