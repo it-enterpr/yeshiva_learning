@@ -43,6 +43,7 @@ export default function LessonPage() {
       setCurrentWordIndex(currentWordIndex + 1);
     } else {
       // Lesson completed
+      alert('Урок завершен! Отличная работа!');
       navigate(-1);
     }
   };
@@ -52,14 +53,19 @@ export default function LessonPage() {
       setCurrentWordIndex(currentWordIndex + 1);
     } else {
       // Lesson completed
+      alert('Урок завершен! Продолжайте изучать!');
       navigate(-1);
     }
+  };
+
+  const handleRequestTranslation = () => {
+    alert(`Запрос на перевод слова "${words[currentWordIndex]}" отправлен раввину!`);
   };
 
   if (loading || !lesson) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="text-slate-300 text-lg">Loading lesson...</div>
+        <div className="text-slate-300 text-lg">Загрузка урока...</div>
       </div>
     );
   }
@@ -67,57 +73,82 @@ export default function LessonPage() {
   const currentWord = words[currentWordIndex];
   const gematria = currentWord ? calculateGematria(currentWord) : { simple: 0, standard: 0, ordinal: 0 };
 
+  // Demo translations for different words
+  const translations: { [key: string]: string } = {
+    'בְּרֵאשִׁית': 'В начале',
+    'בָּרָא': 'сотворил',
+    'אֱלֹהִים': 'Бог',
+    'אֵת': 'את (определенный артикль)',
+    'הַשָּׁמַיִם': 'небеса',
+    'וְאֵת': 'и את',
+    'הָאָרֶץ': 'земля',
+    'וְהָאָרֶץ': 'и земля',
+    'הָיְתָה': 'была',
+    'תֹהוּ': 'пустота',
+    'וָבֹהוּ': 'и хаос',
+    'וְחֹשֶׁךְ': 'и тьма',
+    'עַל־פְּנֵי': 'на поверхности',
+    'תְהוֹם': 'бездна',
+    'וְרוּחַ': 'и дух',
+    'מְרַחֶפֶת': 'парил',
+    'הַמָּיִם': 'воды'
+  };
+
+  const currentTranslation = translations[currentWord] || 'Перевод недоступен';
+
   return (
-    <div className="min-h-screen bg-slate-900">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
       <div className="p-6 pt-16">
         <div className="flex items-center justify-between mb-8">
           <button 
             onClick={() => navigate(-1)}
-            className="p-2 hover:bg-slate-800 rounded-lg transition-colors"
+            className="p-3 hover:bg-slate-700 rounded-xl transition-colors"
           >
             <ArrowLeft size={24} className="text-slate-300" />
           </button>
-          <h1 className="text-xl font-bold text-white text-right">{lesson.title}</h1>
+          <h1 className="text-2xl font-bold text-white text-right">{lesson.title}</h1>
         </div>
 
-        <div className="mb-6">
-          <div className="bg-slate-800 rounded-lg p-4 mb-4">
-            <p className="text-slate-300 text-lg leading-relaxed text-right" style={{ direction: 'rtl' }}>
+        <div className="mb-8">
+          <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl p-6 mb-6 border border-slate-600 shadow-xl">
+            <h2 className="text-lg font-semibold text-slate-300 mb-4">Текст урока:</h2>
+            <p className="text-slate-200 text-xl leading-relaxed text-right mb-6" style={{ direction: 'rtl' }}>
               {lesson.content}
             </p>
-          </div>
 
-          {lesson.audio_url && (
-            <div className="flex items-center justify-center mb-6">
-              <button className="flex items-center bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition-colors">
-                <Play size={20} className="mr-2" />
-                Play Audio
-              </button>
-            </div>
-          )}
+            {lesson.audio_url && (
+              <div className="flex items-center justify-center">
+                <button className="flex items-center bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white px-8 py-4 rounded-xl transition-all duration-200 shadow-lg hover:shadow-green-500/25">
+                  <Play size={24} className="mr-3" />
+                  Воспроизвести аудио
+                </button>
+              </div>
+            )}
+          </div>
         </div>
 
         {words.length > 0 && (
-          <div className="mb-6">
-            <div className="text-center mb-4">
-              <span className="text-slate-400">
-                Word {currentWordIndex + 1} of {words.length}
+          <div className="mb-8">
+            <div className="text-center mb-6">
+              <span className="text-slate-300 text-lg font-medium bg-slate-800 px-4 py-2 rounded-full">
+                Слово {currentWordIndex + 1} из {words.length}
               </span>
             </div>
             
-            <div className="w-full bg-slate-700 rounded-full h-2 mb-6">
+            <div className="w-full bg-slate-700 rounded-full h-3 mb-8 shadow-inner">
               <div 
-                className="bg-blue-500 h-2 rounded-full transition-all duration-300"
+                className="bg-gradient-to-r from-blue-500 to-purple-600 h-3 rounded-full transition-all duration-500 shadow-lg"
                 style={{ width: `${((currentWordIndex + 1) / words.length) * 100}%` }}
               ></div>
             </div>
 
             <WordCard
               word={currentWord}
-              translation="In the beginning" // Demo translation
+              translation={currentTranslation}
               gematria={gematria}
               onKnown={handleWordKnown}
               onUnknown={handleWordUnknown}
+              onRequestTranslation={handleRequestTranslation}
             />
           </div>
         )}
