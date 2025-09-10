@@ -215,8 +215,8 @@ export default function SettingsPage() {
       {/* Profile Section */}
       <div className="mb-8">
         <h2 className={`text-xl font-bold mb-6 px-1 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-          {JSON.parse(localStorage.getItem('interfaceLanguage') || '"Русский"') === 'English' ? 'Profile' : 
-           JSON.parse(localStorage.getItem('interfaceLanguage') || '"Русский"') === 'עברית' ? 'פרופיל' : 'Профиль'}
+          {(localStorage.getItem('interfaceLanguage') || 'Русский') === 'English' ? 'Profile' : 
+           (localStorage.getItem('interfaceLanguage') || 'Русский') === 'עברית' ? 'פרופיל' : 'Профиль'}
         </h2>
         
         <div className={`rounded-2xl p-6 border shadow-xl ${
