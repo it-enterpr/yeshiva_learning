@@ -166,10 +166,6 @@ export const wordService = {
   }
 };
 
-// Import from Supabase at the top
-import { supabase } from './supabase';
-};
-
 // Student progress operations
 export const progressService = {
   async getStudentProgress(studentProfileId: string): Promise<StudentProgress[]> {
