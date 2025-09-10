@@ -11,7 +11,7 @@ import ExportCenter from '../components/ExportCenter';
 export default function ProgressPage() {
   const { darkMode } = useTheme();
   const { user } = useAuth();
-  const [stats, setStats] = useState({
+  const [stats] = useState({
     totalCourses: 3,
     completedLessons: 12,
     totalLessons: 18,
@@ -59,14 +59,14 @@ export default function ProgressPage() {
         ]);
         
         if (statsData) {
-          setRealStats(prev => ({
+          setRealStats({
             ...updatedStats,
             completedLessons: statsData.completedLessons,
             knownWords: statsData.knownWords,
             learningWords: statsData.learningWords,
             averageScore: statsData.averageScore,
             totalStudyTime: Math.round(statsData.totalTime / 60) // convert to hours
-          }));
+          });
         }
         
         setAchievements(achievementsData);

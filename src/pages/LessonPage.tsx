@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, CheckCircle } from 'lucide-react';
 import { Lesson } from '../types/global';
 import WordCard from '../components/WordCard';
 import AudioPlayer from '../components/AudioPlayer';
@@ -134,6 +134,8 @@ export default function LessonPage() {
   };
 
   const handleQuizComplete = async (score: number) => {
+    if (!lesson) return;
+    
     try {
       const timeSpent = Math.round((Date.now() - startTime) / 60000); // minutes
       const userProfile = JSON.parse(localStorage.getItem('userProfile') || '{}');
