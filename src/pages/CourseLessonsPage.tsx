@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, BookOpen, Play, FileText, ArrowRight, Clock } from 'lucide-react';
 import { Lesson } from '../types/global';
+import { supabase, isSupabaseConfigured } from '../lib/supabase';
 
 export default function CourseLessonsPage() {
   const { id } = useParams();
@@ -16,50 +17,71 @@ export default function CourseLessonsPage() {
   }, [id]);
 
   const loadLessons = () => {
-    // Загружаем уроки из localStorage (созданные раввином) + демо уроки
-    const savedLessons = JSON.parse(localStorage.getItem('lessons') || '[]');
-    const courseLessons = savedLessons.filter((lesson: Lesson) => lesson.course_id === id);
-    
-    // Добавляем демо уроки если нет сохраненных
-    if (courseLessons.length === 0) {
-      const demoLessons: Lesson[] = [
-        {
-          id: '1',
-          course_id: id!,
-          title: 'בראשית א׳ א׳-ה׳',
-          content: 'בְּרֵאשִׁית בָּרָא אֱלֹהִים אֵת הַשָּׁמַיִם וְאֵת הָאָרֶץ׃ וְהָאָרֶץ הָיְתָה תֹהוּ וָבֹהוּ וְחֹשֶׁךְ עַל־פְּנֵי תְהוֹם וְרוּחַ אֱלֹהִים מְרַחֶפֶת עַל־פְּנֵי הַמָּיִם׃',
-          audio_url: 'https://example.com/audio1.mp3',
-          youtube_url: 'https://youtube.com/watch?v=example1',
-          order_number: 1,
-          created_at: new Date().toISOString()
-        },
-        {
-          id: '2',
-          course_id: id!,
-          title: 'בראשית א׳ ו׳-י׳',
-          content: 'וַיֹּאמֶר אֱלֹהִים יְהִי רָקִיעַ בְּתוֹךְ הַמָּיִם וִיהִי מַבְדִּיל בֵּין מַיִם לָמָיִם׃',
-          audio_url: 'https://example.com/audio2.mp3',
-          youtube_url: 'https://youtube.com/watch?v=example2',
-          order_number: 2,
-          created_at: new Date().toISOString()
-        },
-        {
-          id: '3',
-          course_id: id!,
-          title: 'בראשית א׳ יא׳-יג׳',
-          content: 'וַיֹּאמֶר אֱלֹהִים תַּדְשֵׁא הָאָרֶץ דֶּשֶׁא עֵשֶׂב מַזְרִיעַ זֶרַע עֵץ פְּרִי עֹשֶׂה פְּרִי לְמִינוֹ׃',
-          audio_url: 'https://example.com/audio3.mp3',
-          youtube_url: 'https://youtube.com/watch?v=example3',
-          order_number: 3,
-          created_at: new Date().toISOString()
-        }
-      ];
-      setLessons(demoLessons);
-    } else {
-      setLessons(courseLessons.sort((a: Lesson, b: Lesson) => a.order_number - b.order_number));
-    }
+    const loadFromSupabase = async () => {
+      if (isSupabaseConfigured() && supabase) {
+        try {
+          const { data, error } = await supabase
+            .from('lessons')
+            .select('*')
+            .eq('course_id', id)
+            .order('order_number', { ascending: true });
 
-    setLoading(false);
+          if (!error && data && data.length > 0) {
+            setLessons(data);
+            setLoading(false);
+            return;
+          }
+        } catch (error) {
+          console.warn('Ошибка загрузки из Supabase:', error);
+        }
+      }
+
+      // Fallback to localStorage and demo data
+      const savedLessons = JSON.parse(localStorage.getItem('lessons') || '[]');
+      const courseLessons = savedLessons.filter((lesson: Lesson) => lesson.course_id === id);
+    
+      // Добавляем демо уроки если нет сохраненных
+      if (courseLessons.length === 0) {
+        const demoLessons: Lesson[] = [
+          {
+            id: '1',
+            course_id: id!,
+            title: 'בראשית א׳ א׳-ה׳',
+            content: 'בְּרֵאשִׁית בָּרָא אֱלֹהִים אֵת הַשָּׁמַיִם וְאֵת הָאָרֶץ׃ וְהָאָרֶץ הָיְתָה תֹהוּ וָבֹהוּ וְחֹשֶׁךְ עַל־פְּנֵי תְהוֹם וְרוּחַ אֱלֹהִים מְרַחֶפֶת עַל־פְּנֵי הַמָּיִם׃',
+            audio_url: 'https://example.com/audio1.mp3',
+            youtube_url: 'https://youtube.com/watch?v=example1',
+            order_number: 1,
+            created_at: new Date().toISOString()
+          },
+          {
+            id: '2',
+            course_id: id!,
+            title: 'בראשית א׳ ו׳-י׳',
+            content: 'וַיֹּאמֶר אֱלֹהִים יְהִי רָקִיעַ בְּתוֹךְ הַמָּיִם וִיהִי מַבְדִּיל בֵּין מַיִם לָמָיִם׃',
+            audio_url: 'https://example.com/audio2.mp3',
+            youtube_url: 'https://youtube.com/watch?v=example2',
+            order_number: 2,
+            created_at: new Date().toISOString()
+          },
+          {
+            id: '3',
+            course_id: id!,
+            title: 'בראשית א׳ יא׳-יג׳',
+            content: 'וַיֹּאמֶר אֱלֹהִים תַּדְשֵׁא הָאָרֶץ דֶּשֶׁא עֵשֶׂב מַזְרִיעַ זֶרַע עֵץ פְּרִי עֹשֶׂה פְּרִי לְמִינוֹ׃',
+            audio_url: 'https://example.com/audio3.mp3',
+            youtube_url: 'https://youtube.com/watch?v=example3',
+            order_number: 3,
+            created_at: new Date().toISOString()
+          }
+        ];
+        setLessons(demoLessons);
+      } else {
+        setLessons(courseLessons.sort((a: Lesson, b: Lesson) => a.order_number - b.order_number));
+      }
+      setLoading(false);
+    };
+
+    loadFromSupabase();
   };
 
   if (loading) {
