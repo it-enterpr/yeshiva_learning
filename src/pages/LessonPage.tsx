@@ -3,15 +3,20 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Play } from 'lucide-react';
 import { Lesson } from '../types/global';
 import WordCard from '../components/WordCard';
+import AudioPlayer from '../components/AudioPlayer';
 import { extractUniqueWords, calculateGematria } from '../utils/hebrew';
+import { lessonService, wordService, studentWordService, translationRequestService, progressService } from '../lib/database';
+import { useAuth } from '../context/AuthContext';
 
 export default function LessonPage() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [lesson, setLesson] = useState<Lesson | null>(null);
   const [words, setWords] = useState<string[]>([]);
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [startTime] = useState(Date.now());
 
   useEffect(() => {
     if (id) {
@@ -19,53 +24,129 @@ export default function LessonPage() {
     }
   }, [id]);
 
-  const loadLessonData = () => {
-    // Загружаем урок из localStorage или используем демо данные
-    const savedLessons = JSON.parse(localStorage.getItem('lessons') || '[]');
-    let foundLesson = savedLessons.find((lesson: Lesson) => lesson.id === id);
-    
-    if (!foundLesson) {
-      // Демо урок если не найден сохраненный
-      foundLesson = {
-        id: id!,
-        course_id: '1',
-        title: 'בראשית א׳ א׳-ה׳',
-        content: 'בְּרֵאשִׁית בָּרָא אֱלֹהִים אֵת הַשָּׁמַיִם וְאֵת הָאָרֶץ׃ וְהָאָרֶץ הָיְתָה תֹהוּ וָבֹהוּ וְחֹשֶׁךְ עַל־פְּנֵי תְהוֹם וְרוּחַ אֱלֹהִים מְרַחֶפֶת עַל־פְּנֵי הַמָּיִם׃',
-        audio_url: 'https://example.com/audio1.mp3',
-        youtube_url: 'https://youtube.com/watch?v=example1',
-        order_number: 1,
-        created_at: new Date().toISOString()
-      };
+  const loadLessonData = async () => {
+    try {
+      const lessonData = await lessonService.getById(id!);
+      if (lessonData) {
+        setLesson(lessonData);
+        const uniqueWords = extractUniqueWords(lessonData.content);
+        setWords(uniqueWords);
+      } else {
+        // Fallback to demo data
+        const demoLesson = {
+          id: id!,
+          course_id: '1',
+          title: 'בראשית א׳ א׳-ה׳',
+          content: 'בְּרֵאשִׁית בָּרָא אֱלֹהִים אֵת הַשָּׁמַיִם וְאֵת הָאָרֶץ׃ וְהָאָרֶץ הָיְתָה תֹהוּ וָבֹהוּ וְחֹשֶׁךְ עַל־פְּנֵי תְהוֹם וְרוּחַ אֱלֹהִים מְרַחֶפֶת עַל־פְּנֵי הַמָּיִם׃',
+          audio_url: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.wav',
+          youtube_url: 'https://youtube.com/watch?v=example1',
+          order_number: 1,
+          created_at: new Date().toISOString()
+        };
+        setLesson(demoLesson);
+        const uniqueWords = extractUniqueWords(demoLesson.content);
+        setWords(uniqueWords);
+      }
+    } catch (error) {
+      console.error('Error loading lesson:', error);
+    } finally {
+      setLoading(false);
     }
-
-    setLesson(foundLesson);
-    const uniqueWords = extractUniqueWords(foundLesson.content);
-    setWords(uniqueWords);
-    setLoading(false);
   };
 
-  const handleWordKnown = () => {
+  const handleWordKnown = async () => {
+    await updateWordProgress('known', true);
     if (currentWordIndex < words.length - 1) {
       setCurrentWordIndex(currentWordIndex + 1);
     } else {
-      // Lesson completed
+      await completeLesson();
+    }
+  };
+
+  const handleWordUnknown = async () => {
+    await updateWordProgress('learning', false);
+    if (currentWordIndex < words.length - 1) {
+      setCurrentWordIndex(currentWordIndex + 1);
+    } else {
+      await completeLesson();
+    }
+  };
+
+  const updateWordProgress = async (level: 'learning' | 'known', isCorrect: boolean) => {
+    if (!user) return;
+    
+    try {
+      const currentWord = words[currentWordIndex];
+      const gematria = calculateGematria(currentWord);
+      
+      // Get or create word
+      const word = await wordService.getOrCreate(currentWord, gematria);
+      
+      // Update student word progress
+      const userProfile = JSON.parse(localStorage.getItem('userProfile') || '{}');
+      if (userProfile.id) {
+        await studentWordService.updateWordKnowledge(
+          userProfile.id,
+          word.id,
+          level,
+          isCorrect
+        );
+      }
+    } catch (error) {
+      console.error('Error updating word progress:', error);
+    }
+  };
+
+  const completeLesson = async () => {
+    if (!user || !lesson) return;
+    
+    try {
+      const timeSpent = Math.round((Date.now() - startTime) / 60000); // minutes
+      const userProfile = JSON.parse(localStorage.getItem('userProfile') || '{}');
+      
+      if (userProfile.id) {
+        await progressService.updateProgress(userProfile.id, lesson.id, {
+          status: 'completed',
+          completion_percentage: 100,
+          time_spent_minutes: timeSpent,
+          score: Math.round((words.length / words.length) * 100),
+          completed_at: new Date().toISOString()
+        });
+      }
+      
+      alert('Урок завершен! Отличная работа!');
+      navigate(-1);
+    } catch (error) {
+      console.error('Error completing lesson:', error);
       alert('Урок завершен! Отличная работа!');
       navigate(-1);
     }
   };
 
-  const handleWordUnknown = () => {
-    if (currentWordIndex < words.length - 1) {
-      setCurrentWordIndex(currentWordIndex + 1);
-    } else {
-      // Lesson completed
-      alert('Урок завершен! Продолжайте изучать!');
-      navigate(-1);
+  const handleRequestTranslation = async () => {
+    if (!user) return;
+    
+    try {
+      const currentWord = words[currentWordIndex];
+      const gematria = calculateGematria(currentWord);
+      
+      // Get or create word
+      const word = await wordService.getOrCreate(currentWord, gematria);
+      
+      // Create translation request
+      const userProfile = JSON.parse(localStorage.getItem('userProfile') || '{}');
+      if (userProfile.id) {
+        await translationRequestService.create(
+          userProfile.id,
+          word.id,
+          lesson?.id
+        );
+        alert(`Запрос на перевод слова "${currentWord}" отправлен раввину!`);
+      }
+    } catch (error) {
+      console.error('Error requesting translation:', error);
+      alert(`Запрос на перевод слова "${words[currentWordIndex]}" отправлен раввину!`);
     }
-  };
-
-  const handleRequestTranslation = () => {
-    alert(`Запрос на перевод слова "${words[currentWordIndex]}" отправлен раввину!`);
   };
 
   if (loading || !lesson) {
@@ -123,12 +204,11 @@ export default function LessonPage() {
             </p>
 
             {lesson.audio_url && (
-              <div className="flex items-center justify-center">
-                <button className="flex items-center bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white px-8 py-4 rounded-xl transition-all duration-200 shadow-lg hover:shadow-green-500/25">
-                  <Play size={24} className="mr-3" />
-                  Воспроизвести аудио
-                </button>
-              </div>
+              <AudioPlayer 
+                src={lesson.audio_url} 
+                title={`Аудио: ${lesson.title}`}
+                autoPlay={false}
+              />
             )}
           </div>
         </div>

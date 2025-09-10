@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { BookOpen, Users, Clock, ArrowRight, Star } from 'lucide-react';
 import { Course } from '../types/global';
-import { supabase, demoData, isSupabaseConfigured } from '../lib/supabase';
+import { courseService } from '../lib/database';
+import { demoData } from '../lib/supabase';
 
 export default function CoursesPage() {
   const [courses, setCourses] = useState<Course[]>([]);
@@ -14,42 +15,14 @@ export default function CoursesPage() {
 
   const loadCourses = async () => {
     try {
-      // Check if demo mode is enabled
-      const isDemoMode = import.meta.env.VITE_SUPABASE_DEMO_MODE === 'true';
-      
-      if (isDemoMode) {
-        console.log('Demo mode enabled - using demo data for courses');
-        setCourses(demoData.courses);
-        return;
-      }
-
-      if (isSupabaseConfigured()) {
-        try {
-          const { data, error } = await supabase!
-            .from('courses')
-            .select(`
-              *,
-              rabbi_profile:user_profiles(name, user_type)
-            `)
-            .eq('is_active', true)
-            .order('created_at', { ascending: false });
-
-          if (error) {
-            console.warn('Ошибка Supabase, используем демо данные:', error);
-            setCourses(demoData.courses);
-          } else {
-            setCourses(data || demoData.courses);
-          }
-        } catch (supabaseError) {
-          console.warn('Ошибка подключения к Supabase, используем демо данные:', supabaseError);
-          setCourses(demoData.courses);
-        }
+      const data = await courseService.getAll();
+      if (data.length > 0) {
+        setCourses(data);
       } else {
-        console.log('Используем демо данные - Supabase не настроен');
         setCourses(demoData.courses);
       }
     } catch (error) {
-      console.error('Ошибка загрузки курсов:', error);
+      console.warn('Ошибка загрузки курсов, используем демо данные:', error);
       setCourses(demoData.courses);
     } finally {
       setLoading(false);
