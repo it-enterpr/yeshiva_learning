@@ -1,8 +1,9 @@
-import { useState } from 'react';
-import { Users, BookOpen, Plus, BarChart3, MessageSquare, X, Save, Check } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Users, BookOpen, Plus, BarChart3, MessageSquare, X, Save, Check, TrendingUp, Award } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import { useAuth } from '../context/AuthContext';
 import { lessonService, translationRequestService } from '../lib/database';
+import ProgressChart from '../components/ProgressChart';
 
 interface NewLesson {
   title: string;
@@ -18,6 +19,7 @@ export default function RabbiPage() {
   const [showCreateLesson, setShowCreateLesson] = useState(false);
   const [showAnalytics, setShowAnalytics] = useState(false);
   const [showTranslationRequests, setShowTranslationRequests] = useState(false);
+  const [showStudentAnalytics, setShowStudentAnalytics] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
   const [translationRequests, setTranslationRequests] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
@@ -244,6 +246,19 @@ export default function RabbiPage() {
           </button>
 
           <button 
+            onClick={() => setShowStudentAnalytics(true)}
+            className={`w-full flex items-center ${darkMode ? 'bg-gradient-to-br from-slate-800 to-slate-900 hover:from-slate-750 hover:to-slate-850 border-slate-600 hover:border-orange-500/30' : 'bg-white hover:bg-gray-50 border-gray-200 hover:border-orange-300'} rounded-2xl p-6 border transition-all duration-300 shadow-xl hover:shadow-orange-500/10`}
+          >
+            <div className="w-14 h-14 bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl flex items-center justify-center mr-4 shadow-lg">
+              <TrendingUp size={28} className="text-white" />
+            </div>
+            <div className="text-left">
+              <div className={`font-bold ${darkMode ? 'text-white' : 'text-gray-900'} text-lg`}>Аналитика студентов</div>
+              <div className={`${darkMode ? 'text-slate-400' : 'text-gray-600'}`}>Детальные графики прогресса студентов</div>
+            </div>
+          </button>
+
+          <button 
             onClick={() => setShowTranslationRequests(true)}
             className={`w-full flex items-center ${darkMode ? 'bg-gradient-to-br from-slate-800 to-slate-900 hover:from-slate-750 hover:to-slate-850 border-slate-600 hover:border-yellow-500/30' : 'bg-white hover:bg-gray-50 border-gray-200 hover:border-yellow-300'} rounded-2xl p-6 border transition-all duration-300 shadow-xl hover:shadow-yellow-500/10`}
           >
@@ -455,6 +470,112 @@ export default function RabbiPage() {
                       </span>
                     </div>
                     <span className="text-slate-300">{item.requests} запросов</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Student Analytics Modal */}
+      {showStudentAnalytics && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className={`${darkMode ? 'bg-gradient-to-br from-slate-800 to-slate-900 border-slate-600' : 'bg-white border-gray-200'} rounded-2xl p-8 max-w-6xl w-full max-h-[90vh] overflow-y-auto border shadow-2xl`}>
+            <div className="flex items-center justify-between mb-6">
+              <h3 className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Аналитика студентов</h3>
+              <button 
+                onClick={() => setShowStudentAnalytics(false)}
+                className={`p-2 ${darkMode ? 'hover:bg-slate-700' : 'hover:bg-gray-100'} rounded-xl transition-colors`}
+              >
+                <X size={24} className={darkMode ? 'text-slate-400' : 'text-gray-500'} />
+              </button>
+            </div>
+
+            {/* Student Performance Overview */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+              <div className={`${darkMode ? 'bg-slate-700/50' : 'bg-gray-50'} rounded-xl p-6`}>
+                <div className="flex items-center mb-4">
+                  <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center mr-3">
+                    <Users size={20} className="text-white" />
+                  </div>
+                  <h4 className={`font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Активные студенты</h4>
+                </div>
+                <div className={`text-3xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'} mb-2`}>24</div>
+                <div className={`text-sm ${darkMode ? 'text-slate-400' : 'text-gray-600'}`}>+3 за неделю</div>
+              </div>
+
+              <div className={`${darkMode ? 'bg-slate-700/50' : 'bg-gray-50'} rounded-xl p-6`}>
+                <div className="flex items-center mb-4">
+                  <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center mr-3">
+                    <Award size={20} className="text-white" />
+                  </div>
+                  <h4 className={`font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Средний балл</h4>
+                </div>
+                <div className={`text-3xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'} mb-2`}>87%</div>
+                <div className={`text-sm ${darkMode ? 'text-slate-400' : 'text-gray-600'}`}>+5% за месяц</div>
+              </div>
+
+              <div className={`${darkMode ? 'bg-slate-700/50' : 'bg-gray-50'} rounded-xl p-6`}>
+                <div className="flex items-center mb-4">
+                  <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center mr-3">
+                    <TrendingUp size={20} className="text-white" />
+                  </div>
+                  <h4 className={`font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Завершенность</h4>
+                </div>
+                <div className={`text-3xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'} mb-2`}>78%</div>
+                <div className={`text-sm ${darkMode ? 'text-slate-400' : 'text-gray-600'}`}>уроков завершено</div>
+              </div>
+            </div>
+
+            {/* Detailed Analytics Chart */}
+            <div className="mb-6">
+              <h4 className={`text-lg font-bold ${darkMode ? 'text-white' : 'text-gray-900'} mb-4`}>
+                Общий прогресс студентов
+              </h4>
+              <ProgressChart studentId="all-students" period="month" />
+            </div>
+
+            {/* Top Students */}
+            <div>
+              <h4 className={`text-lg font-bold ${darkMode ? 'text-white' : 'text-gray-900'} mb-4`}>
+                Лучшие студенты этого месяца
+              </h4>
+              <div className="space-y-3">
+                {[
+                  { name: 'Сара Леви', progress: 95, words: 320, lessons: 18 },
+                  { name: 'Давид Коэн', progress: 87, words: 245, lessons: 15 },
+                  { name: 'Рахель Гольдберг', progress: 82, words: 198, lessons: 12 }
+                ].map((student, index) => (
+                  <div key={index} className={`${darkMode ? 'bg-slate-700/50' : 'bg-gray-50'} rounded-xl p-4`}>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center">
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center mr-3 font-bold text-white ${
+                          index === 0 ? 'bg-yellow-500' : index === 1 ? 'bg-gray-400' : 'bg-orange-500'
+                        }`}>
+                          {index + 1}
+                        </div>
+                        <div>
+                          <div className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                            {student.name}
+                          </div>
+                          <div className={`text-sm ${darkMode ? 'text-slate-400' : 'text-gray-600'}`}>
+                            {student.words} слов • {student.lessons} уроков
+                          </div>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <div className={`font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                          {student.progress}%
+                        </div>
+                        <div className={`w-20 ${darkMode ? 'bg-slate-600' : 'bg-gray-200'} rounded-full h-2 mt-1`}>
+                          <div 
+                            className="bg-gradient-to-r from-blue-500 to-purple-600 h-2 rounded-full"
+                            style={{ width: `${student.progress}%` }}
+                          ></div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 ))}
               </div>
