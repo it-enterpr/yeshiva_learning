@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Play } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import { Lesson } from '../types/global';
 import WordCard from '../components/WordCard';
 import AudioPlayer from '../components/AudioPlayer';

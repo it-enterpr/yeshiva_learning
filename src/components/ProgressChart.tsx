@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell } from 'recharts';
 import { useTheme } from '../context/ThemeContext';
-import { Calendar, TrendingUp, Users, Target } from 'lucide-react';
+import { TrendingUp, Users, Target } from 'lucide-react';
 
 interface ChartData {
   date: string;

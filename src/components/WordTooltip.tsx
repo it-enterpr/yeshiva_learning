@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Volume2, BookOpen, Calculator } from 'lucide-react';
+import { Volume2, Calculator } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import { calculateGematria } from '../utils/hebrew';
 

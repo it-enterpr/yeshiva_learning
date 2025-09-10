@@ -21,7 +21,6 @@ export default function LessonQuiz({ questions, onComplete, onRetry }: LessonQui
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [selectedAnswers, setSelectedAnswers] = useState<number[]>([]);
   const [showResults, setShowResults] = useState(false);
-  const [quizCompleted, setQuizCompleted] = useState(false);
 
   const handleAnswerSelect = (answerIndex: number) => {
     const newAnswers = [...selectedAnswers];
@@ -39,7 +38,6 @@ export default function LessonQuiz({ questions, onComplete, onRetry }: LessonQui
 
   const completeQuiz = () => {
     setShowResults(true);
-    setQuizCompleted(true);
     
     const correctAnswers = selectedAnswers.filter((answer, index) => 
       answer === questions[index].correctAnswer
@@ -53,7 +51,6 @@ export default function LessonQuiz({ questions, onComplete, onRetry }: LessonQui
     setCurrentQuestion(0);
     setSelectedAnswers([]);
     setShowResults(false);
-    setQuizCompleted(false);
     onRetry();
   };
 
