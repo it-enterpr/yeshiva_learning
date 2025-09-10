@@ -48,39 +48,40 @@ export default function Layout({ children }: LayoutProps) {
       
       {/* User info header */}
       {user && (
-        <div className={`relative z-10 p-4 border-b backdrop-blur-lg ${
+        <div className={`relative z-10 px-4 py-3 border-b backdrop-blur-lg ${
           darkMode 
             ? 'bg-slate-900/50 border-slate-700' 
             : 'bg-white/50 border-gray-200'
         }`}>
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between max-w-screen-xl mx-auto">
             <div className="flex items-center">
-              <div className={`w-10 h-10 rounded-full flex items-center justify-center mr-3 ${
+              <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center mr-2 sm:mr-3 ${
                 user.role === 'rabbi' 
                   ? 'bg-gradient-to-br from-purple-500 to-purple-600' 
                   : 'bg-gradient-to-br from-blue-500 to-blue-600'
               }`}>
                 {user.role === 'rabbi' ? (
-                  <Users size={20} className="text-white" />
+                  <Users size={16} className="text-white sm:w-5 sm:h-5" />
                 ) : (
-                  <User size={20} className="text-white" />
+                  <User size={16} className="text-white sm:w-5 sm:h-5" />
                 )}
               </div>
               <div>
-                <div className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                <div className={`font-semibold text-sm sm:text-base truncate max-w-[120px] sm:max-w-none ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                   {user.name}
                 </div>
-                <div className={`text-xs ${darkMode ? 'text-slate-400' : 'text-gray-600'}`}>
+                <div className={`text-xs hidden sm:block ${darkMode ? 'text-slate-400' : 'text-gray-600'}`}>
                   {user.role === 'rabbi' ? 'Раввин' : 'Ученик'}
                 </div>
               </div>
             </div>
-            <div className={`px-3 py-1 rounded-full text-xs font-semibold ${
+            <div className={`px-2 py-1 sm:px-3 rounded-full text-xs font-semibold ${
               user.role === 'rabbi'
                 ? 'bg-purple-100 text-purple-800'
                 : 'bg-blue-100 text-blue-800'
             }`}>
-              {user.nativeLanguage}
+              <span className="hidden sm:inline">{user.nativeLanguage}</span>
+              <span className="sm:hidden">{user.nativeLanguage.slice(0, 2)}</span>
             </div>
           </div>
         </div>
@@ -119,3 +120,5 @@ export default function Layout({ children }: LayoutProps) {
     </div>
   );
 }
+
+export default Layout

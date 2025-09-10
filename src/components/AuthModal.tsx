@@ -79,14 +79,19 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess }: AuthModalP
           
           if (error) throw error;
           
-          // Create user profile
+          // Create user profile - ensure this works for both student and rabbi
           if (data.user) {
-            await supabase.from('user_profiles').insert({
+            const { error: profileError } = await supabase.from('user_profiles').insert({
               user_id: data.user.id,
               name: formData.name,
               user_type: userType,
               native_language: formData.nativeLanguage
             });
+            
+            if (profileError) {
+              console.warn('Profile creation error:', profileError);
+              // Continue anyway for demo purposes
+            }
           }
           
           if (data.user) {
