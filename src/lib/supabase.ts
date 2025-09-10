@@ -4,20 +4,33 @@ import { createClient } from '@supabase/supabase-js';
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-// Create and export Supabase client (will be null if not configured)
-export const supabase = supabaseUrl && supabaseAnonKey 
-  ? createClient(supabaseUrl, supabaseAnonKey, {
-      auth: {
-        autoRefreshToken: true,
-        persistSession: true,
-        detectSessionInUrl: false,
-      },
-    })
-  : null;
+// Validate environment variables
+if (!supabaseUrl || !supabaseAnonKey) {
+  console.error('Missing Supabase environment variables');
+  throw new Error('Supabase URL and Anon Key are required');
+}
+
+// Create and export Supabase client
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+  auth: {
+    autoRefreshToken: true,
+    persistSession: true,
+    detectSessionInUrl: false,
+    flowType: 'pkce'
+  },
+  db: {
+    schema: 'public'
+  },
+  global: {
+    headers: {
+      'X-Client-Info': 'hebrew-study-app@1.0.0'
+    }
+  }
+});
 
 // Helper function to check if Supabase is properly configured
 export const isSupabaseConfigured = (): boolean => {
-  return !!(supabaseUrl && supabaseAnonKey);
+  return true; // Always true now since we validate above
 };
 
 // Demo data fallback for development

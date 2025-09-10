@@ -37,7 +37,7 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess }: AuthModalP
     setLoading(true);
 
     try {
-      if (isSupabaseConfigured() && supabase) {
+      if (supabase) {
         if (isLogin) {
           const { data, error } = await supabase.auth.signInWithPassword({
             email: formData.email,
@@ -79,25 +79,7 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess }: AuthModalP
           
           if (error) throw error;
           
-          // Create user profile
-          if (data.user) {
-            try {
-              const { error: profileError } = await supabase.from('user_profiles').insert({
-                user_id: data.user.id,
-                name: formData.name,
-                user_type: userType,
-                native_language: formData.nativeLanguage
-              });
-              
-              if (profileError) {
-                console.warn('Profile creation error:', profileError);
-                // Continue anyway for demo purposes
-              }
-            } catch (profileError) {
-              console.warn('Profile creation failed, continuing with demo mode:', profileError);
-            }
-          }
-          
+          // Create user profile - this will be handled by the trigger
           if (data.user) {
             const user: UserType = {
               id: data.user.id,
@@ -111,31 +93,11 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess }: AuthModalP
           }
         }
       } else {
-        // Demo mode - save to localStorage
-        const userData: UserType = {
-          id: Date.now().toString(),
-          email: formData.email,
-          name: formData.name,
-          role: userType,
-          nativeLanguage: formData.nativeLanguage,
-          created_at: new Date().toISOString()
-        };
-        
-        localStorage.setItem('currentUser', JSON.stringify(userData));
-        localStorage.setItem('userProfile', JSON.stringify({
-          name: formData.name,
-          email: formData.email,
-          nativeLanguage: formData.nativeLanguage,
-          nativeLanguageCode: languages.find(l => l.name === formData.nativeLanguage)?.code || 'ru',
-          studyStreak: 0,
-          totalLessons: 0,
-          knownWords: 0
-        }));
-        
-        onAuthSuccess(userData);
+        throw new Error('Supabase not configured');
       }
     } catch (error: any) {
-      alert(error.message || 'Произошла ошибка');
+      console.error('Auth error:', error);
+      alert(error.message || 'Произошла ошибка при авторизации');
     } finally {
       setLoading(false);
     }

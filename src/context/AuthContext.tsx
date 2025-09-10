@@ -28,46 +28,35 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const checkUser = async () => {
     try {
-      if (isSupabaseConfigured() && supabase) {
-        try {
-          const { data: { session } } = await supabase.auth.getSession();
-          
-          if (session?.user) {
-            const { data: profile } = await supabase
-              .from('user_profiles')
-              .select('*')
-              .eq('user_id', session.user.id)
-              .single();
-              
-            if (profile) {
-              setUser({
-                id: session.user.id,
-                email: session.user.email!,
-                name: profile.name,
-                role: profile.user_type,
-                nativeLanguage: profile.native_language,
-                created_at: profile.created_at || new Date().toISOString()
-              });
-            }
-          }
-        } catch (supabaseError) {
-          console.warn('Supabase auth check failed, falling back to demo mode:', supabaseError);
-          // Fall back to localStorage check
-          const savedUser = localStorage.getItem('currentUser');
-          if (savedUser) {
-            setUser(JSON.parse(savedUser));
+      if (supabase) {
+        const { data: { session } } = await supabase.auth.getSession();
+        
+        if (session?.user) {
+          const { data: profile } = await supabase
+            .from('user_profiles')
+            .select('*')
+            .eq('user_id', session.user.id)
+            .single();
+            
+          if (profile) {
+            setUser({
+              id: session.user.id,
+              email: session.user.email!,
+              name: profile.name,
+              role: profile.user_type,
+              nativeLanguage: profile.native_language,
+              created_at: profile.created_at || new Date().toISOString()
+            });
           } else {
+            // Profile not found, show auth modal
             setShowAuthModal(true);
           }
-        }
-      } else {
-        // Demo mode - check localStorage
-        const savedUser = localStorage.getItem('currentUser');
-        if (savedUser) {
-          setUser(JSON.parse(savedUser));
         } else {
+          // No session, show auth modal
           setShowAuthModal(true);
         }
+      } else {
+        throw new Error('Supabase not configured');
       }
     } catch (error) {
       console.error('Error checking user:', error);
@@ -84,7 +73,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const logout = async () => {
     try {
-      if (isSupabaseConfigured() && supabase) {
+      if (supabase) {
         await supabase.auth.signOut();
       }
       localStorage.removeItem('currentUser');
