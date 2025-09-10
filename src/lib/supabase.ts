@@ -24,35 +24,35 @@ export const isSupabaseConfigured = (): boolean => {
 export const demoData = {
   courses: [
     {
-      id: '1',
+      id: '11111111-1111-1111-1111-111111111111',
       title: 'תורה - בראשית',
       description: 'לימוד ספר בראשית עם פירוש רש"י ותרגום לשפת האם',
-      rabbi_id: 'rabbi1',
+      rabbi_id: '00000000-0000-0000-0000-000000000001',
       created_at: new Date().toISOString(),
       is_active: true
     },
     {
-      id: '2', 
+      id: '22222222-2222-2222-2222-222222222222', 
       title: 'תלמוד בבלי - ברכות',
       description: 'מסכת ברכות עם הסברים מפורטים ותרגום המושגים',
-      rabbi_id: 'rabbi1',
+      rabbi_id: '00000000-0000-0000-0000-000000000001',
       created_at: new Date().toISOString(),
       is_active: true
     },
     {
-      id: '3',
+      id: '33333333-3333-3333-3333-333333333333',
       title: 'תניא - ליקוטי אמרים',
       description: 'ספר התניא עם הסברי חסידות ותרגום למתחילים',
-      rabbi_id: 'rabbi1', 
+      rabbi_id: '00000000-0000-0000-0000-000000000001', 
       created_at: new Date().toISOString(),
       is_active: true
     }
   ],
   lessons: {
-    '1': [
+    '11111111-1111-1111-1111-111111111111': [
       {
         id: '1',
-        course_id: '1',
+        course_id: '11111111-1111-1111-1111-111111111111',
         title: 'בראשית א׳ א׳-ה׳',
         content: 'בְּרֵאשִׁית בָּרָא אֱלֹהִים אֵת הַשָּׁמַיִם וְאֵת הָאָרֶץ׃ וְהָאָרֶץ הָיְתָה תֹהוּ וָבֹהוּ וְחֹשֶׁךְ עַל־פְּנֵי תְהוֹם וְרוּחַ אֱלֹהִים מְרַחֶפֶת עַל־פְּנֵי הַמָּיִם׃',
         audio_url: 'https://example.com/audio1.mp3',

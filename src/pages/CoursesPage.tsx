@@ -15,17 +15,22 @@ export default function CoursesPage() {
   const loadCourses = async () => {
     try {
       if (isSupabaseConfigured()) {
-        const { data, error } = await supabase!
-          .from('courses')
-          .select('*')
-          .eq('is_active', true)
-          .order('created_at', { ascending: false });
+        try {
+          const { data, error } = await supabase!
+            .from('courses')
+            .select('*')
+            .eq('is_active', true)
+            .order('created_at', { ascending: false });
 
-        if (error) {
-          console.warn('Ошибка Supabase, используем демо данные:', error);
+          if (error) {
+            console.warn('Ошибка Supabase, используем демо данные:', error);
+            setCourses(demoData.courses);
+          } else {
+            setCourses(data || demoData.courses);
+          }
+        } catch (supabaseError) {
+          console.warn('Ошибка подключения к Supabase, используем демо данные:', supabaseError);
           setCourses(demoData.courses);
-        } else {
-          setCourses(data || []);
         }
       } else {
         console.log('Используем демо данные - Supabase не настроен');
