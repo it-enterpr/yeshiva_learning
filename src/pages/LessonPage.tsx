@@ -4,6 +4,8 @@ import { ArrowLeft, Play } from 'lucide-react';
 import { Lesson } from '../types/global';
 import WordCard from '../components/WordCard';
 import AudioPlayer from '../components/AudioPlayer';
+import InteractiveText from '../components/InteractiveText';
+import LessonQuiz from '../components/LessonQuiz';
 import { extractUniqueWords, calculateGematria } from '../utils/hebrew';
 import { lessonService, wordService, studentWordService, translationRequestService, progressService } from '../lib/database';
 import { useAuth } from '../context/AuthContext';
@@ -16,6 +18,8 @@ export default function LessonPage() {
   const [words, setWords] = useState<string[]>([]);
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [showQuiz, setShowQuiz] = useState(false);
+  const [lessonCompleted, setLessonCompleted] = useState(false);
   const [startTime] = useState(Date.now());
 
   useEffect(() => {
@@ -100,27 +104,7 @@ export default function LessonPage() {
   const completeLesson = async () => {
     if (!user || !lesson) return;
     
-    try {
-      const timeSpent = Math.round((Date.now() - startTime) / 60000); // minutes
-      const userProfile = JSON.parse(localStorage.getItem('userProfile') || '{}');
-      
-      if (userProfile.id) {
-        await progressService.updateProgress(userProfile.id, lesson.id, {
-          status: 'completed',
-          completion_percentage: 100,
-          time_spent_minutes: timeSpent,
-          score: Math.round((words.length / words.length) * 100),
-          completed_at: new Date().toISOString()
-        });
-      }
-      
-      alert('Урок завершен! Отличная работа!');
-      navigate(-1);
-    } catch (error) {
-      console.error('Error completing lesson:', error);
-      alert('Урок завершен! Отличная работа!');
-      navigate(-1);
-    }
+    setShowQuiz(true);
   };
 
   const handleRequestTranslation = async () => {
@@ -147,6 +131,48 @@ export default function LessonPage() {
       console.error('Error requesting translation:', error);
       alert(`Запрос на перевод слова "${words[currentWordIndex]}" отправлен раввину!`);
     }
+  };
+
+  const handleQuizComplete = async (score: number) => {
+    try {
+      const timeSpent = Math.round((Date.now() - startTime) / 60000); // minutes
+      const userProfile = JSON.parse(localStorage.getItem('userProfile') || '{}');
+      
+      if (userProfile.id) {
+        await progressService.updateProgress(userProfile.id, lesson.id, {
+          status: 'completed',
+          completion_percentage: 100,
+          time_spent_minutes: timeSpent,
+          score: score,
+          completed_at: new Date().toISOString()
+        });
+      }
+      
+      // Обновляем статистику в localStorage
+      const updatedProfile = {
+        ...userProfile,
+        totalLessons: (userProfile.totalLessons || 0) + 1,
+        knownWords: (userProfile.knownWords || 0) + words.length
+      };
+      localStorage.setItem('userProfile', JSON.stringify(updatedProfile));
+      
+      setLessonCompleted(true);
+      
+      setTimeout(() => {
+        navigate(-1);
+      }, 3000);
+    } catch (error) {
+      console.error('Error completing lesson:', error);
+      setLessonCompleted(true);
+      setTimeout(() => {
+        navigate(-1);
+      }, 3000);
+    }
+  };
+
+  const handleQuizRetry = () => {
+    setShowQuiz(false);
+    setCurrentWordIndex(0);
   };
 
   if (loading || !lesson) {
@@ -181,7 +207,69 @@ export default function LessonPage() {
     'הַמָּיִם': 'воды'
   };
 
+  const quizQuestions = [
+    {
+      id: '1',
+      question: 'Что означает слово בְּרֵאשִׁית?',
+      options: ['В конце', 'В начале', 'В середине', 'Всегда'],
+      correctAnswer: 1,
+      explanation: 'בְּרֵאשִׁית означает "В начале" - первое слово Торы'
+    },
+    {
+      id: '2',
+      question: 'Как переводится אֱלֹהִים?',
+      options: ['Ангел', 'Человек', 'Бог', 'Пророк'],
+      correctAnswer: 2,
+      explanation: 'אֱלֹהִים - это одно из имен Всевышнего'
+    },
+    {
+      id: '3',
+      question: 'Что означает הַשָּׁמַיִם?',
+      options: ['земля', 'вода', 'огонь', 'небеса'],
+      correctAnswer: 3,
+      explanation: 'הַשָּׁמַיִם означает "небеса"'
+    }
+  ];
+
   const currentTranslation = translations[currentWord] || 'Перевод недоступен';
+
+  if (lessonCompleted) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-20 h-20 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center mx-auto mb-6">
+            <CheckCircle size={40} className="text-white" />
+          </div>
+          <h2 className="text-3xl font-bold text-white mb-4">Урок завершен!</h2>
+          <p className="text-slate-300 text-lg">Отличная работа! Возвращаемся к урокам...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (showQuiz) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-6 pt-16">
+        <div className="max-w-2xl mx-auto">
+          <div className="flex items-center mb-8">
+            <button 
+              onClick={() => setShowQuiz(false)}
+              className="mr-4 p-3 hover:bg-slate-700 rounded-xl transition-colors"
+            >
+              <ArrowLeft size={24} className="text-slate-300" />
+            </button>
+            <h1 className="text-2xl font-bold text-white">Тест по уроку: {lesson.title}</h1>
+          </div>
+          
+          <LessonQuiz 
+            questions={quizQuestions}
+            onComplete={handleQuizComplete}
+            onRetry={handleQuizRetry}
+          />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
@@ -199,9 +287,26 @@ export default function LessonPage() {
         <div className="mb-8">
           <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl p-6 mb-6 border border-slate-600 shadow-xl">
             <h2 className="text-lg font-semibold text-slate-300 mb-4">Текст урока:</h2>
-            <p className="text-slate-200 text-xl leading-relaxed text-right mb-6" style={{ direction: 'rtl' }}>
-              {lesson.content}
-            </p>
+            
+            <InteractiveText
+              text={lesson.content}
+              translations={translations}
+              unknownWords={words.filter(word => !translations[word] || translations[word] === 'Перевод недоступен')}
+              className="text-slate-200 text-xl leading-relaxed mb-6"
+            />
+            
+            <div className="mb-4 p-3 bg-slate-700/50 rounded-xl">
+              <div className="text-sm text-slate-400 mb-2">Статистика урока:</div>
+              <div className="flex justify-between text-sm">
+                <span className="text-slate-300">Всего слов: {words.length}</span>
+                <span className="text-red-400">
+                  Неизвестных: {words.filter(word => !translations[word] || translations[word] === 'Перевод недоступен').length}
+                </span>
+                <span className="text-green-400">
+                  Известных: {words.filter(word => translations[word] && translations[word] !== 'Перевод недоступен').length}
+                </span>
+              </div>
+            </div>
 
             {lesson.audio_url && (
               <AudioPlayer 

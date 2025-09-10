@@ -221,27 +221,27 @@ export default function RabbiPage() {
 
           <button 
             onClick={() => setShowCreateLesson(true)}
-            className="w-full flex items-center bg-gradient-to-br from-slate-800 to-slate-900 hover:from-slate-750 hover:to-slate-850 rounded-2xl p-6 border border-slate-600 transition-all duration-300 shadow-xl hover:shadow-green-500/10 hover:border-green-500/30"
+            className={`w-full flex items-center ${darkMode ? 'bg-gradient-to-br from-slate-800 to-slate-900 hover:from-slate-750 hover:to-slate-850 border-slate-600 hover:border-green-500/30' : 'bg-white hover:bg-gray-50 border-gray-200 hover:border-green-300'} rounded-2xl p-6 border transition-all duration-300 shadow-xl hover:shadow-green-500/10`}
           >
             <div className="w-14 h-14 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center mr-4 shadow-lg">
               <BookOpen size={28} className="text-white" />
             </div>
             <div className="text-left">
-              <div className="font-bold text-white text-lg">Добавить новый урок</div>
-              <div className="text-slate-400">Создать урок с аудио контентом</div>
+              <div className={`font-bold ${darkMode ? 'text-white' : 'text-gray-900'} text-lg`}>Добавить новый урок</div>
+              <div className={`${darkMode ? 'text-slate-400' : 'text-gray-600'}`}>Создать урок с аудио контентом</div>
             </div>
           </button>
 
           <button 
             onClick={() => setShowAnalytics(true)}
-            className="w-full flex items-center bg-gradient-to-br from-slate-800 to-slate-900 hover:from-slate-750 hover:to-slate-850 rounded-2xl p-6 border border-slate-600 transition-all duration-300 shadow-xl hover:shadow-purple-500/10 hover:border-purple-500/30"
+            className={`w-full flex items-center ${darkMode ? 'bg-gradient-to-br from-slate-800 to-slate-900 hover:from-slate-750 hover:to-slate-850 border-slate-600 hover:border-purple-500/30' : 'bg-white hover:bg-gray-50 border-gray-200 hover:border-purple-300'} rounded-2xl p-6 border transition-all duration-300 shadow-xl hover:shadow-purple-500/10`}
           >
             <div className="w-14 h-14 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center mr-4 shadow-lg">
               <BarChart3 size={28} className="text-white" />
             </div>
             <div className="text-left">
-              <div className="font-bold text-white text-lg">Просмотреть аналитику</div>
-              <div className="text-slate-400">Отследить прогресс и вовлеченность студентов</div>
+              <div className={`font-bold ${darkMode ? 'text-white' : 'text-gray-900'} text-lg`}>Просмотреть аналитику</div>
+              <div className={`${darkMode ? 'text-slate-400' : 'text-gray-600'}`}>Отследить прогресс и вовлеченность студентов</div>
             </div>
           </button>
 

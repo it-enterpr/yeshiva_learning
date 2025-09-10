@@ -25,15 +25,7 @@ export default function ProgressPage() {
   const [showExportCenter, setShowExportCenter] = useState(false);
   const [chartPeriod, setChartPeriod] = useState<'week' | 'month' | 'year'>('month');
 
-  // Загружаем реальные данные из localStorage
-  const userProfile = JSON.parse(localStorage.getItem('userProfile') || '{}');
-  const realStats = {
-    ...stats,
-    knownWords: userProfile.knownWords || stats.knownWords,
-    studyStreak: userProfile.studyStreak || stats.studyStreak,
-    totalLessons: userProfile.totalLessons || stats.totalLessons,
-    completedLessons: Math.min(userProfile.totalLessons || stats.completedLessons, stats.totalLessons)
-  };
+  const [realStats, setRealStats] = useState(stats);
 
   useEffect(() => {
     loadProgressData();
@@ -42,17 +34,32 @@ export default function ProgressPage() {
   const loadProgressData = async () => {
     if (!user) return;
     
+    setLoading(true);
     try {
+      // Загружаем реальные данные из localStorage
       const userProfile = JSON.parse(localStorage.getItem('userProfile') || '{}');
-      if (userProfile.id) {
+      
+      // Обновляем статистику из localStorage
+      const updatedStats = {
+        ...stats,
+        knownWords: userProfile.knownWords || stats.knownWords,
+        studyStreak: userProfile.studyStreak || stats.studyStreak,
+        totalLessons: userProfile.totalLessons || stats.totalLessons,
+        completedLessons: Math.min(userProfile.totalLessons || stats.completedLessons, stats.totalLessons)
+      };
+      
+      setRealStats(updatedStats);
+      
+      // Пытаемся загрузить данные из Supabase если доступно
+      if (userProfile.id && supabase) {
         const [statsData, achievementsData] = await Promise.all([
           progressService.getStudentStats(userProfile.id),
           achievementService.getUserAchievements(userProfile.id)
         ]);
         
         if (statsData) {
-          setStats(prev => ({
-            ...prev,
+          setRealStats(prev => ({
+            ...updatedStats,
             completedLessons: statsData.completedLessons,
             knownWords: statsData.knownWords,
             learningWords: statsData.learningWords,
@@ -62,6 +69,39 @@ export default function ProgressPage() {
         }
         
         setAchievements(achievementsData);
+      }
+      
+      // Демо достижения если нет реальных
+      if (achievements.length === 0) {
+        setAchievements([
+          {
+            id: '1',
+            achievement_type: 'first_lesson',
+            achievement_name: 'Первый урок',
+            description: 'Завершили первый урок изучения',
+            icon: '🎓',
+            points: 10,
+            unlocked_at: new Date().toISOString()
+          },
+          {
+            id: '2',
+            achievement_type: 'hundred_words',
+            achievement_name: '100 слов',
+            description: 'Изучили 100 слов на иврите',
+            icon: '📚',
+            points: 50,
+            unlocked_at: new Date().toISOString()
+          },
+          {
+            id: '3',
+            achievement_type: 'streak',
+            achievement_name: 'Постоянство',
+            description: '15 дней изучения подряд',
+            icon: '🔥',
+            points: 25,
+            unlocked_at: new Date().toISOString()
+          }
+        ]);
       }
     } catch (error) {
       console.error('Error loading progress data:', error);
