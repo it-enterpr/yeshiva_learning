@@ -53,7 +53,17 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess }: AuthModalP
             .eq('user_id', data.user.id)
             .single();
             
-          onAuthSuccess({ ...data.user, profile });
+          if (data.user) {
+            const user: UserType = {
+              id: data.user.id,
+              email: data.user.email || '',
+              name: profile?.name || '',
+              role: profile?.user_type as 'student' | 'rabbi' || 'student',
+              nativeLanguage: profile?.native_language || 'Русский',
+              created_at: data.user.created_at || new Date().toISOString()
+            };
+            onAuthSuccess(user);
+          }
         } else {
           const { data, error } = await supabase.auth.signUp({
             email: formData.email,
@@ -79,7 +89,17 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess }: AuthModalP
             });
           }
           
-          onAuthSuccess(data.user);
+          if (data.user) {
+            const user: UserType = {
+              id: data.user.id,
+              email: data.user.email || '',
+              name: formData.name,
+              role: userType,
+              nativeLanguage: formData.nativeLanguage,
+              created_at: data.user.created_at || new Date().toISOString()
+            };
+            onAuthSuccess(user);
+          }
         }
       } else {
         // Demo mode - save to localStorage
