@@ -28,7 +28,7 @@ export default function AudioPlayer({ src, title, autoPlay = false, className = 
       setDuration(audio.duration);
       setIsLoading(false);
       if (autoPlay) {
-        audio.play().catch(e => setError('Не удалось воспроизвести аудио'));
+        audio.play().catch(() => setError('Не удалось воспроизвести аудио'));
       }
     };
 

@@ -54,12 +54,6 @@ export default function AchievementBadge({
     large: 'w-16 h-16'
   };
 
-  const iconSizes = {
-    small: 16,
-    medium: 20,
-    large: 24
-  };
-
   return (
     <div className="relative">
       <div

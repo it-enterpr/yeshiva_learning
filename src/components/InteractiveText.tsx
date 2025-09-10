@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useTheme } from '../context/ThemeContext';
 import WordTooltip from './WordTooltip';
-import { extractUniqueWords } from '../utils/hebrew';
 
 interface InteractiveTextProps {
   text: string;
