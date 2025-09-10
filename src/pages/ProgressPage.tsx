@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
-import { Book, Target, TrendingUp, Clock, Award, Brain, Calendar, Trophy } from 'lucide-react';
+import { Book, Target, TrendingUp, Clock, Award, Brain, Calendar, Trophy, Download } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import { useAuth } from '../context/AuthContext';
 import { progressService, achievementService } from '../lib/database';
 import AchievementBadge from '../components/AchievementBadge';
+import ProgressChart from '../components/ProgressChart';
+import ExportCenter from '../components/ExportCenter';
 
 export default function ProgressPage() {
   const { darkMode } = useTheme();
@@ -20,6 +22,8 @@ export default function ProgressPage() {
   });
   const [achievements, setAchievements] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showExportCenter, setShowExportCenter] = useState(false);
+  const [chartPeriod, setChartPeriod] = useState<'week' | 'month' | 'year'>('month');
 
   // Загружаем реальные данные из localStorage
   const userProfile = JSON.parse(localStorage.getItem('userProfile') || '{}');
@@ -83,7 +87,16 @@ export default function ProgressPage() {
         <h1 className={`text-4xl font-bold mb-3 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent`}>
           Ваш прогресс
         </h1>
-        <p className={`${darkMode ? 'text-slate-400' : 'text-gray-600'} text-lg`}>Отслеживайте свой путь обучения</p>
+        <div className="flex items-center justify-between">
+          <p className={`${darkMode ? 'text-slate-400' : 'text-gray-600'} text-lg`}>Отслеживайте свой путь обучения</p>
+          <button
+            onClick={() => setShowExportCenter(true)}
+            className="flex items-center bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-4 py-2 rounded-xl transition-all duration-200 shadow-lg hover:shadow-blue-500/25 font-medium"
+          >
+            <Download size={18} className="mr-2" />
+            Экспорт данных
+          </button>
+        </div>
       </div>
 
       {/* Overview Cards */}
@@ -131,6 +144,53 @@ export default function ProgressPage() {
           <div className={`text-3xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'} mb-2`}>{realStats.studyStreak}</div>
           <div className={`text-sm ${darkMode ? 'text-slate-400' : 'text-gray-600'}`}>Дней подряд</div>
         </div>
+      </div>
+
+      {/* Advanced Analytics Charts */}
+      <div className="mb-8">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Детальная аналитика</h2>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setChartPeriod('week')}
+              className={`px-4 py-2 rounded-xl font-medium transition-colors ${
+                chartPeriod === 'week'
+                  ? 'bg-blue-600 text-white'
+                  : darkMode
+                    ? 'bg-slate-700 text-slate-300 hover:bg-slate-600'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              Неделя
+            </button>
+            <button
+              onClick={() => setChartPeriod('month')}
+              className={`px-4 py-2 rounded-xl font-medium transition-colors ${
+                chartPeriod === 'month'
+                  ? 'bg-blue-600 text-white'
+                  : darkMode
+                    ? 'bg-slate-700 text-slate-300 hover:bg-slate-600'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              Месяц
+            </button>
+            <button
+              onClick={() => setChartPeriod('year')}
+              className={`px-4 py-2 rounded-xl font-medium transition-colors ${
+                chartPeriod === 'year'
+                  ? 'bg-blue-600 text-white'
+                  : darkMode
+                    ? 'bg-slate-700 text-slate-300 hover:bg-slate-600'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              Год
+            </button>
+          </div>
+        </div>
+        
+        <ProgressChart studentId={user?.id || ''} period={chartPeriod} />
       </div>
 
       {/* Study Time Card */}
@@ -277,6 +337,12 @@ export default function ProgressPage() {
           </div>
         </div>
       </div>
+
+      {/* Export Center Modal */}
+      <ExportCenter 
+        isOpen={showExportCenter}
+        onClose={() => setShowExportCenter(false)}
+      />
     </div>
   );
 }
