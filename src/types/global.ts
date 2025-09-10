@@ -11,7 +11,7 @@ export interface Course {
   id: string;
   title: string;
   description: string;
-  rabbi_id: string;
+  rabbi_profile_id: string;
   created_at: string;
   is_active: boolean;
 }

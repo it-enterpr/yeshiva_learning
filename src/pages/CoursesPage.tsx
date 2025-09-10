@@ -18,7 +18,10 @@ export default function CoursesPage() {
         try {
           const { data, error } = await supabase!
             .from('courses')
-            .select('*')
+            .select(`
+              *,
+              rabbi_profile:user_profiles(name, user_type)
+            `)
             .eq('is_active', true)
             .order('created_at', { ascending: false });
 
