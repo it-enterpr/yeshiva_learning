@@ -95,16 +95,82 @@ export default function SettingsPage() {
       nativeLanguageCode: selectedLang?.code || 'ru'
     });
     setShowLanguageSelect(false);
-    setUserProfile({ 
+    
+    // Update user profile and save to localStorage
+    const updatedProfile = { 
       ...userProfile, 
       nativeLanguage: language,
       nativeLanguageCode: selectedLang?.code || 'ru'
-    });
-    localStorage.setItem('userProfile', JSON.stringify({
-      ...userProfile, 
-      nativeLanguage: language,
-      nativeLanguageCode: selectedLang?.code || 'ru'
-    }));
+    };
+    setUserProfile(updatedProfile);
+    localStorage.setItem('userProfile', JSON.stringify(updatedProfile));
+    
+    // Update interface language based on selection
+    const interfaceTexts = {
+      'Русский': {
+        profile: 'Профиль',
+        editButton: 'Редактировать',
+        learningSettings: 'Настройки обучения',
+        nativeLanguage: 'Родной язык',
+        changeButton: 'Изменить',
+        darkTheme: 'Темная тема',
+        useDarkTheme: 'Использовать темную тему',
+        notifications: 'Уведомления',
+        pushNotifications: 'Push-уведомления',
+        studyReminders: 'Напоминания об учебе и обновления',
+        account: 'Аккаунт',
+        privacy: 'Приватность и безопасность',
+        manageAccount: 'Управление безопасностью аккаунта',
+        logout: 'Выйти',
+        logoutAccount: 'Выйти из аккаунта',
+        appName: 'Приложение изучения иврита',
+        version: 'Версия 1.0.0',
+        footer: 'Создано it-enterprise.cz'
+      },
+      'English': {
+        profile: 'Profile',
+        editButton: 'Edit',
+        learningSettings: 'Learning Settings',
+        nativeLanguage: 'Native Language',
+        changeButton: 'Change',
+        darkTheme: 'Dark Theme',
+        useDarkTheme: 'Use dark theme',
+        notifications: 'Notifications',
+        pushNotifications: 'Push Notifications',
+        studyReminders: 'Study reminders and updates',
+        account: 'Account',
+        privacy: 'Privacy and Security',
+        manageAccount: 'Manage account security',
+        logout: 'Logout',
+        logoutAccount: 'Logout from account',
+        appName: 'Hebrew Study App',
+        version: 'Version 1.0.0',
+        footer: 'Created by it-enterprise.cz'
+      },
+      'עברית': {
+        profile: 'פרופיל',
+        editButton: 'ערוך',
+        learningSettings: 'הגדרות למידה',
+        nativeLanguage: 'שפת אם',
+        changeButton: 'שנה',
+        darkTheme: 'ערכת נושא כהה',
+        useDarkTheme: 'השתמש בערכת נושא כהה',
+        notifications: 'התראות',
+        pushNotifications: 'התראות דחיפה',
+        studyReminders: 'תזכורות לימוד ועדכונים',
+        account: 'חשבון',
+        privacy: 'פרטיות ואבטחה',
+        manageAccount: 'נהל אבטחת חשבון',
+        logout: 'התנתק',
+        logoutAccount: 'התנתק מהחשבון',
+        appName: 'אפליקציית לימוד עברית',
+        version: 'גרסה 1.0.0',
+        footer: 'נוצר על ידי it-enterprise.cz'
+      }
+    };
+    
+    // Save interface language to localStorage
+    localStorage.setItem('interfaceLanguage', language);
     showSavedMessage(`Язык изменен на ${language}`);
   };
 
@@ -148,30 +214,62 @@ export default function SettingsPage() {
 
       {/* Profile Section */}
       <div className="mb-8">
-        <h2 className={`text-xl font-bold mb-6 px-1 ${darkMode ? 'text-white' : 'text-gray-900'}`}>Профиль</h2>
+        <h2 className={`text-xl font-bold mb-6 px-1 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+          {JSON.parse(localStorage.getItem('interfaceLanguage') || '"Русский"') === 'English' ? 'Profile' : 
+           JSON.parse(localStorage.getItem('interfaceLanguage') || '"Русский"') === 'עברית' ? 'פרופיל' : 'Профиль'}
+        </h2>
         
         <div className={`rounded-2xl p-6 border shadow-xl ${
           darkMode 
             ? 'bg-gradient-to-br from-slate-800 to-slate-900 border-slate-600' 
             : 'bg-white border-gray-200'
         }`}>
-          <div className="flex items-center mb-6">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-6">
             <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mr-4 shadow-lg">
               <User size={32} className="text-white" />
             </div>
             <div className="flex-1">
-              <div className={`font-bold text-xl ${darkMode ? 'text-white' : 'text-gray-900'}`}>{userProfile.name}</div>
-              <div className={`${darkMode ? 'text-slate-400' : 'text-gray-600'}`}>{userProfile.email}</div>
-              <div className={`text-sm mt-1 ${darkMode ? 'text-blue-400' : 'text-blue-600'}`}>
-                {userProfile.studyStreak} дней подряд • {userProfile.totalLessons} уроков • {userProfile.knownWords} слов
+              <div className={`font-bold text-xl break-words ${darkMode ? 'text-white' : 'text-gray-900'}`}>{userProfile.name}</div>
+              <div className={`break-all text-sm sm:text-base ${darkMode ? 'text-slate-400' : 'text-gray-600'}`}>{userProfile.email}</div>
+              <div className={`text-xs sm:text-sm mt-1 flex flex-wrap gap-2 ${darkMode ? 'text-blue-400' : 'text-blue-600'}`}>
+                <span>{userProfile.studyStreak} дней подряд</span>
+                <span>•</span>
+                <span>{userProfile.totalLessons} уроков</span>
+                <span>•</span>
+                <span>{userProfile.knownWords} слов</span>
               </div>
             </div>
-            <button 
-              onClick={() => setShowProfileEdit(!showProfileEdit)}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl transition-colors font-semibold"
-            >
-              Редактировать
-            </button>
+            <div className="w-full sm:w-auto">
+              <button 
+                onClick={() => setShowProfileEdit(!showProfileEdit)}
+                className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl transition-colors font-semibold text-sm"
+              >
+                Редактировать
+              </button>
+            </div>
+          </div>
+
+          {/* Mobile-friendly stats */}
+          <div className="grid grid-cols-3 gap-2 sm:hidden mb-4">
+            <div className={`text-center p-3 rounded-xl ${darkMode ? 'bg-slate-700/50' : 'bg-gray-100'}`}>
+              <div className={`font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{userProfile.studyStreak}</div>
+              <div className={`text-xs ${darkMode ? 'text-slate-400' : 'text-gray-600'}`}>дней</div>
+            </div>
+            <div className={`text-center p-3 rounded-xl ${darkMode ? 'bg-slate-700/50' : 'bg-gray-100'}`}>
+              <div className={`font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{userProfile.totalLessons}</div>
+              <div className={`text-xs ${darkMode ? 'text-slate-400' : 'text-gray-600'}`}>уроков</div>
+            </div>
+            <div className={`text-center p-3 rounded-xl ${darkMode ? 'bg-slate-700/50' : 'bg-gray-100'}`}>
+              <div className={`font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{userProfile.knownWords}</div>
+              <div className={`text-xs ${darkMode ? 'text-slate-400' : 'text-gray-600'}`}>слов</div>
+            </div>
+          </div>
+
+          {/* Desktop stats - hidden on mobile */}
+          <div className="hidden sm:block">
+            <div className={`text-sm mt-1 ${darkMode ? 'text-blue-400' : 'text-blue-600'}`}>
+                {userProfile.studyStreak} дней подряд • {userProfile.totalLessons} уроков • {userProfile.knownWords} слов
+            </div>
           </div>
 
           {showProfileEdit && (
@@ -432,13 +530,39 @@ export default function SettingsPage() {
       </div>
 
       {/* Footer */}
-      <div className="text-center py-8">
-        <div className="flex items-center justify-center mb-3">
-          <BookOpen size={24} className={`mr-2 ${darkMode ? 'text-blue-400' : 'text-blue-600'}`} />
-          <span className={`text-lg font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Приложение изучения иврита</span>
+      <div className="text-center py-8 border-t border-slate-600 mt-8">
+        <div className="max-w-md mx-auto">
+          <div className="flex items-center justify-center mb-4">
+            <BookOpen size={20} className={`mr-2 ${darkMode ? 'text-blue-400' : 'text-blue-600'}`} />
+            <span className={`text-base font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+              Приложение изучения иврита
+            </span>
+          </div>
+          
+          <div className={`text-sm mb-3 ${darkMode ? 'text-slate-400' : 'text-gray-600'}`}>
+            Версия 1.0.0
+          </div>
+          
+          <div className={`text-sm font-medium ${darkMode ? 'text-slate-300' : 'text-gray-700'}`}>
+            Создано 
+            <a 
+              href="https://it-enterprise.cz" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className={`ml-1 font-bold transition-colors ${
+                darkMode 
+                  ? 'text-blue-400 hover:text-blue-300' 
+                  : 'text-blue-600 hover:text-blue-700'
+              }`}
+            >
+              it-enterprise.cz
+            </a>
+          </div>
+          
+          <div className={`text-xs mt-2 ${darkMode ? 'text-slate-500' : 'text-gray-500'}`}>
+            © 2024 IT Enterprise. Все права защищены.
+          </div>
         </div>
-        <div className={`text-sm mb-1 ${darkMode ? 'text-slate-500' : 'text-gray-500'}`}>Версия 1.0.0</div>
-        <div className={`text-xs ${darkMode ? 'text-slate-600' : 'text-gray-400'}`}>Создано с ❤️ для изучения Торы</div>
       </div>
     </div>
   );
