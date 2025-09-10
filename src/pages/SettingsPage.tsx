@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { User, Globe, Palette, Bell, Shield, LogOut, ChevronRight, Volume2, BookOpen, Save, Check } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
+import { useAuth } from '../context/AuthContext';
  
 interface UserProfile {
   name: string;
@@ -14,6 +15,7 @@ interface UserProfile {
 
 export default function SettingsPage() {
   const { darkMode, toggleDarkMode } = useTheme();
+  const { user, logout } = useAuth();
   const [notifications, setNotifications] = useState(true); // This state is still local for notifications
   const [autoPlay, setAutoPlay] = useState(false);
   const [rtlMode, setRtlMode] = useState(true);
@@ -22,9 +24,9 @@ export default function SettingsPage() {
   const [savedMessage, setSavedMessage] = useState('');
   
   const [userProfile, setUserProfile] = useState<UserProfile>({
-    name: 'Давид Коэн',
-    email: 'david.cohen@example.com',
-    nativeLanguage: 'Русский',
+    name: user?.name || 'Давид Коэн',
+    email: user?.email || 'david.cohen@example.com',
+    nativeLanguage: user?.native_language || 'Русский',
     nativeLanguageCode: 'ru',
     studyStreak: 15,
     totalLessons: 12,
@@ -108,8 +110,7 @@ export default function SettingsPage() {
 
   const handleLogout = () => {
     if (confirm('Вы уверены, что хотите выйти?')) {
-      localStorage.clear();
-      alert('Вы вышли из системы');
+      logout();
     }
   };
 
