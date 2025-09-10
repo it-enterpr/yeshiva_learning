@@ -2,6 +2,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { Book, User, Users, Settings } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import { useAuth } from '../context/AuthContext';
+import NotificationCenter from './NotificationCenter';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -83,6 +84,7 @@ export default function Layout({ children }: LayoutProps) {
               <span className="hidden sm:inline">{user.nativeLanguage}</span>
               <span className="sm:hidden">{user.nativeLanguage.slice(0, 2)}</span>
             </div>
+            <NotificationCenter />
           </div>
         </div>
       )}
