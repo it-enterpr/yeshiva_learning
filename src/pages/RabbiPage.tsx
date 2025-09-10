@@ -15,7 +15,6 @@ interface NewLesson {
 
 export default function RabbiPage() {
   const { darkMode } = useTheme();
-  const { user } = useAuth();
   const [showCreateLesson, setShowCreateLesson] = useState(false);
   const [showAnalytics, setShowAnalytics] = useState(false);
   const [showTranslationRequests, setShowTranslationRequests] = useState(false);
@@ -87,7 +86,6 @@ export default function RabbiPage() {
     }
 
     try {
-      const userProfile = JSON.parse(localStorage.getItem('userProfile') || '{}');
       const existingLessons = JSON.parse(localStorage.getItem('lessons') || '[]');
       
       const lessonData = {

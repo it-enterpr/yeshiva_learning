@@ -21,8 +21,8 @@ export interface Lesson {
   course_id: string;
   title: string;
   content: string;
-  audio_url?: string;
-  youtube_url?: string;
+  audio_url?: string | null;
+  youtube_url?: string | null;
   order_number: number;
   estimated_duration_minutes?: number;
   is_published?: boolean;
