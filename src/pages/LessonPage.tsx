@@ -35,7 +35,7 @@ export default function LessonPage() {
         // Fallback to demo data
         const demoLesson = {
           id: id!,
-          course_id: '1',
+          course_id: '11111111-1111-1111-1111-111111111111',
           title: 'בראשית א׳ א׳-ה׳',
           content: 'בְּרֵאשִׁית בָּרָא אֱלֹהִים אֵת הַשָּׁמַיִם וְאֵת הָאָרֶץ׃ וְהָאָרֶץ הָיְתָה תֹהוּ וָבֹהוּ וְחֹשֶׁךְ עַל־פְּנֵי תְהוֹם וְרוּחַ אֱלֹהִים מְרַחֶפֶת עַל־פְּנֵי הַמָּיִם׃',
           audio_url: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.wav',

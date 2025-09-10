@@ -25,7 +25,7 @@ export default function CourseLessonsPage() {
         // Fallback to demo data
         const demoLessons: Lesson[] = [
           {
-            id: '1',
+            id: 'a0e1b2c3-d4e5-f6a7-b8c9-d0e1f2a3b4c5',
             course_id: id!,
             title: 'בראשית א׳ א׳-ה׳',
             content: 'בְּרֵאשִׁית בָּרָא אֱלֹהִים אֵת הַשָּׁמַיִם וְאֵת הָאָרֶץ׃ וְהָאָרֶץ הָיְתָה תֹהוּ וָבֹהוּ וְחֹשֶׁךְ עַל־פְּנֵי תְהוֹם וְרוּחַ אֱלֹהִים מְרַחֶפֶת עַל־פְּנֵי הַמָּיִם׃',
@@ -35,7 +35,7 @@ export default function CourseLessonsPage() {
             created_at: new Date().toISOString()
           },
           {
-            id: '2',
+            id: 'b1f2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6',
             course_id: id!,
             title: 'בראשית א׳ ו׳-י׳',
             content: 'וַיֹּאמֶר אֱלֹהִים יְהִי רָקִיעַ בְּתוֹךְ הַמָּיִם וִיהִי מַבְדִּיל בֵּין מַיִם לָמָיִם׃',
@@ -45,7 +45,7 @@ export default function CourseLessonsPage() {
             created_at: new Date().toISOString()
           },
           {
-            id: '3',
+            id: 'c2e3d4f5-a6b7-c8d9-e0f1-a2b3c4d5e6f7',
             course_id: id!,
             title: 'בראשית א׳ יא׳-יג׳',
             content: 'וַיֹּאמֶר אֱלֹהִים תַּדְשֵׁא הָאָרֶץ דֶּשֶׁא עֵשֶׂב מַזְרִיעַ זֶרַע עֵץ פְּרִי עֹשֶׂה פְּרִי לְמִינוֹ׃',
