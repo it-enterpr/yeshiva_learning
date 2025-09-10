@@ -14,6 +14,15 @@ export default function CoursesPage() {
 
   const loadCourses = async () => {
     try {
+      // Check if demo mode is enabled
+      const isDemoMode = import.meta.env.VITE_SUPABASE_DEMO_MODE === 'true';
+      
+      if (isDemoMode) {
+        console.log('Demo mode enabled - using demo data for courses');
+        setCourses(demoData.courses);
+        return;
+      }
+
       if (isSupabaseConfigured()) {
         try {
           const { data, error } = await supabase!
