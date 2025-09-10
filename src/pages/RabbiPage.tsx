@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Users, BookOpen, Plus, BarChart3, MessageSquare, X, Save, Check, TrendingUp, Award } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
-import { useAuth } from '../context/AuthContext';
 import { lessonService, translationRequestService } from '../lib/database';
 import ProgressChart from '../components/ProgressChart';
 
