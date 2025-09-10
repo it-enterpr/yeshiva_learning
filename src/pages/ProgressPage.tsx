@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Book, Target, TrendingUp, Clock, Award, Brain, Calendar, Trophy, Download } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import { useAuth } from '../context/AuthContext';
+import { supabase } from '../lib/supabase';
 import { progressService, achievementService } from '../lib/database';
 import AchievementBadge from '../components/AchievementBadge';
 import ProgressChart from '../components/ProgressChart';
