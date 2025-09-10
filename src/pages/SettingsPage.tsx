@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { User, Globe, Palette, Bell, Shield, LogOut, ChevronRight, Volume2, BookOpen, Save, Check } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import { useAuth } from '../context/AuthContext';
+import { User as UserType } from '../types/global';
  
 interface UserProfile {
   name: string;
@@ -26,7 +27,7 @@ export default function SettingsPage() {
   const [userProfile, setUserProfile] = useState<UserProfile>({
     name: user?.name || 'Давид Коэн',
     email: user?.email || 'david.cohen@example.com',
-    nativeLanguage: user?.native_language || 'Русский',
+    nativeLanguage: user?.nativeLanguage || 'Русский',
     nativeLanguageCode: 'ru',
     studyStreak: 15,
     totalLessons: 12,

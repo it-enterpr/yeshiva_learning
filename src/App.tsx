@@ -11,7 +11,7 @@ import { ThemeProvider } from './context/ThemeContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
 
 function AppContent() {
-  const { user, loading, login, showAuthModal, setShowAuthModal } = useAuth();
+  const { loading, login, showAuthModal, setShowAuthModal } = useAuth();
 
   if (loading) {
     return (

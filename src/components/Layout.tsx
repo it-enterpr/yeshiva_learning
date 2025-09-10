@@ -2,6 +2,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { Book, User, Users, Settings } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import { useAuth } from '../context/AuthContext';
+import { User as UserType } from '../types/global';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -20,7 +21,7 @@ export default function Layout({ children }: LayoutProps) {
   ];
 
   // Filter navigation based on user type
-  const filteredNavItems = user?.user_type === 'rabbi' 
+  const filteredNavItems = user?.role === 'rabbi' 
     ? navItems.filter(item => item.path !== '/progress')
     : navItems.filter(item => item.path !== '/rabbi');
 
@@ -56,11 +57,11 @@ export default function Layout({ children }: LayoutProps) {
           <div className="flex items-center justify-between">
             <div className="flex items-center">
               <div className={`w-10 h-10 rounded-full flex items-center justify-center mr-3 ${
-                user.user_type === 'rabbi' 
+                user.role === 'rabbi' 
                   ? 'bg-gradient-to-br from-purple-500 to-purple-600' 
                   : 'bg-gradient-to-br from-blue-500 to-blue-600'
               }`}>
-                {user.user_type === 'rabbi' ? (
+                {user.role === 'rabbi' ? (
                   <Users size={20} className="text-white" />
                 ) : (
                   <User size={20} className="text-white" />
@@ -71,16 +72,16 @@ export default function Layout({ children }: LayoutProps) {
                   {user.name}
                 </div>
                 <div className={`text-xs ${darkMode ? 'text-slate-400' : 'text-gray-600'}`}>
-                  {user.user_type === 'rabbi' ? 'Раввин' : 'Ученик'}
+                  {user.role === 'rabbi' ? 'Раввин' : 'Ученик'}
                 </div>
               </div>
             </div>
             <div className={`px-3 py-1 rounded-full text-xs font-semibold ${
-              user.user_type === 'rabbi'
+              user.role === 'rabbi'
                 ? 'bg-purple-100 text-purple-800'
                 : 'bg-blue-100 text-blue-800'
             }`}>
-              {user.native_language}
+              {user.nativeLanguage}
             </div>
           </div>
         </div>

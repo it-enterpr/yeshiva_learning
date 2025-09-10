@@ -2,11 +2,12 @@ import { useState } from 'react';
 import { X, User, Users, Mail, Lock, Eye, EyeOff, BookOpen, Star, Sparkles } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import { User as UserType } from '../types/global';
 
 interface AuthModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onAuthSuccess: (user: any) => void;
+  onAuthSuccess: (user: UserType) => void;
 }
 
 export default function AuthModal({ isOpen, onClose, onAuthSuccess }: AuthModalProps) {
@@ -82,12 +83,13 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess }: AuthModalP
         }
       } else {
         // Demo mode - save to localStorage
-        const userData = {
+        const userData: UserType = {
           id: Date.now().toString(),
           email: formData.email,
           name: formData.name,
-          user_type: userType,
-          native_language: formData.nativeLanguage
+          role: userType,
+          nativeLanguage: formData.nativeLanguage,
+          created_at: new Date().toISOString()
         };
         
         localStorage.setItem('currentUser', JSON.stringify(userData));

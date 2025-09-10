@@ -1,13 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
-
-interface User {
-  id: string;
-  email: string;
-  name: string;
-  user_type: 'student' | 'rabbi';
-  native_language: string;
-}
+import { User } from '../types/global';
 
 interface AuthContextType {
   user: User | null;
@@ -50,8 +43,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
               id: session.user.id,
               email: session.user.email!,
               name: profile.name,
-              user_type: profile.user_type,
-              native_language: profile.native_language
+              role: profile.user_type,
+              nativeLanguage: profile.native_language,
+              created_at: profile.created_at || new Date().toISOString()
             });
           }
         }
