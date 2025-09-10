@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { User, Globe, Palette, Bell, Shield, LogOut, ChevronRight, Volume2, BookOpen, Save, Check } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import { useAuth } from '../context/AuthContext';
-import { User as UserType } from '../types/global';
  
 interface UserProfile {
   name: string;
