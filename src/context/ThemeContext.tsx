@@ -14,8 +14,13 @@ interface ThemeProviderProps {
 export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
   const [darkMode, setDarkMode] = useState<boolean>(() => {
     // Initialize from localStorage or default to true (dark mode)
-    const savedTheme = localStorage.getItem('appTheme');
-    return savedTheme ? JSON.parse(savedTheme) : true;
+    try {
+      const savedTheme = localStorage.getItem('appTheme');
+      return savedTheme ? JSON.parse(savedTheme) : true;
+    } catch (error) {
+      console.warn('Failed to parse theme from localStorage, using default:', error);
+      return true;
+    }
   });
 
   useEffect(() => {

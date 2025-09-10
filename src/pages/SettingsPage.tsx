@@ -48,19 +48,28 @@ export default function SettingsPage() {
 
   useEffect(() => {
     // Load user data from localStorage or API
-    const savedProfile = localStorage.getItem('userProfile');
-    if (savedProfile) {
-      setUserProfile(JSON.parse(savedProfile));
-      setTempProfile(JSON.parse(savedProfile));
+    try {
+      const savedProfile = localStorage.getItem('userProfile');
+      if (savedProfile) {
+        const parsedProfile = JSON.parse(savedProfile);
+        setUserProfile(parsedProfile);
+        setTempProfile(parsedProfile);
+      }
+    } catch (error) {
+      console.warn('Failed to parse user profile from localStorage:', error);
     }
 
-    const savedSettings = localStorage.getItem('appSettings');
-    if (savedSettings) {
-      const settings = JSON.parse(savedSettings);
-      setNotifications(settings.notifications ?? true);
-      // darkMode is now managed by ThemeContext, no need to load here
-      setAutoPlay(settings.autoPlay ?? false);
-      setRtlMode(settings.rtlMode ?? true);
+    try {
+      const savedSettings = localStorage.getItem('appSettings');
+      if (savedSettings) {
+        const settings = JSON.parse(savedSettings);
+        setNotifications(settings.notifications ?? true);
+        // darkMode is now managed by ThemeContext, no need to load here
+        setAutoPlay(settings.autoPlay ?? false);
+        setRtlMode(settings.rtlMode ?? true);
+      }
+    } catch (error) {
+      console.warn('Failed to parse app settings from localStorage:', error);
     }
   }, []);
 
